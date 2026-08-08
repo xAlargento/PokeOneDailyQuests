@@ -517,6 +517,39 @@
             border-radius: 20px;
             padding: 30px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+            position: relative;
+        }
+
+        .optimize-route-tab {
+            position: absolute;
+            right: 100%;
+            top: 35px;
+            width: 125px;
+            padding: 12px 8px;
+            background-color: var(--pokemon-blue);
+            color: var(--accent-yellow);
+            border: 3px solid var(--accent-yellow);
+            border-right: none;
+            border-radius: 12px 0 0 12px;
+            margin-right: -3px;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.65rem;
+            line-height: 1.4;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: -4px 4px 12px rgba(0, 0, 0, 0.6);
+            transition: all 0.2s ease;
+            z-index: 5;
+        }
+
+        .optimize-route-tab:hover {
+            background-color: #4c5fd7;
+            color: #ffffff;
+            box-shadow: -6px 6px 16px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 203, 5, 0.5);
+        }
+
+        .optimize-route-tab:active {
+            transform: translateX(2px);
         }
 
         /* --- COUNTER DASHBOARD --- */
@@ -609,6 +642,40 @@
             background: rgba(255, 17, 85, 0.15);
             color: var(--pokemon-red);
             border-color: var(--pokemon-red);
+        }
+
+        .phase-badge.weekly-badge {
+            background: rgba(59, 76, 202, 0.2);
+            color: #55aaff;
+            border-color: #55aaff;
+        }
+
+        .category-header-wrapper {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sort-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            color: var(--accent-yellow);
+            cursor: pointer;
+            font-size: 0.85rem;
+            padding: 3px 6px;
+            transition: all 0.2s ease;
+            line-height: 1;
+        }
+
+        .sort-btn:hover {
+            color: #ffffff;
+            border-color: var(--accent-yellow);
+            background-color: rgba(255, 203, 5, 0.12);
+            transform: scale(1.05);
         }
 
         .quest-name {
@@ -934,6 +1001,15 @@
                 width: auto;
                 padding: 16px 24px;
             }
+            .optimize-route-tab {
+                position: static;
+                width: auto;
+                border-right: 3px solid var(--accent-yellow);
+                border-radius: 8px;
+                margin-right: 0;
+                margin-bottom: 15px;
+                display: inline-block;
+            }
         }
 
         @media (max-width: 992px) {
@@ -1020,17 +1096,21 @@
 
     <!-- Tab Navigation -->
     <div class="tab-navigation">
-        <button class="tab-btn active" id="tabUnova" onclick="switchTab('unova')">Unova Daily Quests</button>
-        <button class="tab-btn" id="tabSummer" onclick="switchTab('summer')">Summer Event Daily Quests</button>
+        <button class="tab-btn active" id="tabUnova" onclick="switchTab('unova')">Unova</button>
+        <button class="tab-btn" id="tabSummer" onclick="switchTab('summer')">Summer Event</button>
     </div>
 
     <!-- Tracker Grid Container -->
     <div class="tracker-grid">
         <!-- Left: Daily Quests Section -->
         <section class="quests-section" id="questsSection">
+            <!-- Pulsanti linguetta sporgenti attaccati alla colonna - uno dedicato per ciascuna Tab -->
+            <button class="optimize-route-tab" id="btnOptimizeRouteUnova" onclick="optimizeRouteUnova()">OPTIMIZE ROUTE</button>
+            <button class="optimize-route-tab" id="btnOptimizeRouteSummer" onclick="optimizeRouteSummer()" style="display: none;">OPTIMIZE ROUTE</button>
+
             <div class="section-header">
                 <div class="section-title-group">
-                    <h2 class="section-title" id="currentTabTitle">Unova Daily Quests</h2>
+                    <h2 class="section-title" id="currentTabTitle">Unova</h2>
                     <span class="section-subtitle-hint">(Click on the Buttons to change status!)</span>
                 </div>
             </div>
@@ -1064,6 +1144,12 @@
                     <thead>
                         <tr id="tableHeaderRow">
                             <th class="status-cell">Status</th>
+                            <th>
+                                <div class="category-header-wrapper">
+                                    <span>Category</span>
+                                    <button class="sort-btn" onclick="sortUnovaByCategory()" title="Sort Category">&#8645;</button>
+                                </div>
+                            </th>
                             <th>Quest</th>
                             <th>Location</th>
                             <th>XP Gain</th>
@@ -1325,35 +1411,35 @@
 
         /* --- UNOVA QUESTS DATA --- */
         const unovaQuestsData = [
-            { quest: "Bookshelves", location: "(Every City)", xp: "5-15 XP", isBookshelves: true, notes: "Visit each city and enter each pokecenter. Interact with the bookshelves to claim the xp.", completed: false },
-            { quest: "Village Bridge Sandwiches", location: "Village Bridge", notes: "Fly Location: Lacunosa, go left and go down under the bridge", completed: false },
-            { quest: "Feed Patrat", location: "Nuvema Town", notes: "Fly Location: Nuvema and interact with the Patrat - This quest requires 1 Berry of any kind", completed: false },
-            { quest: "Shaymin Egg", location: "Lacunosa Town", notes: "Fly Location: Lacunosa, go left and interact with the flowers", completed: false },
-            { quest: "Unova E4", location: "Unova Pokémon League", notes: "Fly Location: Unova Pokémon League", completed: false },
-            { quest: "Black Tower", location: "Black City", notes: "Fly Location: Black City", completed: false },
-            { quest: "Trasure and Pots", location: "Dragonspiral Tower", notes: "Fly Location: Icirrus City, go upwards towards Dragonspiral Tower, talk to Travis", completed: false },
-            { quest: "Pokémon World Tournament", location: "Pokémon World Tournament", notes: "Fly Location: Driftveil City, go downwards", completed: false },
-            { quest: "Royal Unova", location: "Castelia City", notes: "Fly Location: Castelia City, go down towards the ship and talk to Captain Royal to get on the ship", completed: false },
-            { quest: "Royal Unova Bonus XP", location: "Castelia City", notes: "Fly Location: Castelia City, go down towards the ship and talk to Captain Royal to get on the ship. Once inside, talk to any NPC to gain 50 xp", completed: false },
-            { quest: "Dreamyard Basement", location: "Dreamyard Ruins", notes: "Fly Location: Striaton City, go right towards the Dreamyard Ruins. Use force to push the boulder and go down and left, take the stairs down, talk to the NPC in the middle of the room and check the boxes until you find the 3 items required.", mapUrl: "https://i.imgur.com/YsP3EHu.jpeg", completed: false },
-            { quest: "Dreamyard Munnas", location: "Dreamyard Ruins", notes: "Fly Location: Striaton City, go right towards the Dreamyard Ruins. Interact with scientist first", completed: false },
-            { quest: "Wingull Grams", location: "Lacunosa Beach", notes: "Fly Location: Lacunosa, go right and down on the beach and interact with Vinny and find the 3 grams on the beach - Note: they could be anything! A pokéball, the sand castle, a rock... I'll provide some screenshots of the locations.", completed: false },
-            { quest: "White Forest", location: "White Forest", notes: "Fly Location: Black City, enter the White Forest on the far left", completed: false },
-            { quest: "White Forest Logs", location: "White Forest", notes: "Fly Location: Black City, interact with the logs or fight wild pokemons", completed: false },
-            { quest: "Cynthia", location: "Undella Town", notes: "Fly Location: Undella Town first house on the right, left of the pokecenter. Note: this is a daily fight only in summer and spring, it can only be done once during winter and fall.", completed: false },
-            { quest: "Ghost", location: "Nimbasa City", notes: "Fly Location: Nimbasa City going Up and Right (Marvelous Bridge)", completed: false },
-            { quest: "Nimbasa Stadium", location: "Nimbasa City", notes: "Fly Location: Nimbasa City, Two Tents going Upwards", completed: false },
-            { quest: "N (Boss)", location: "Nimbasa City", notes: "Fly Location: Nimbasa City Ferris Wheel on the Right. Note: This is a weekly boss only available on FRIDAY.", completed: false },
-            { quest: "The Riches", location: "Undella Town", notes: "Fly Location: Undella Town, first house on the left", completed: false },
-            { quest: "Kyurem", location: "Humilau City", notes: "Fly Location: Humilau City going Left (Giant Chasm). Note: Take the quest outside the cave first!", completed: false },
-            { quest: "Cheren", location: "Unova Pokémon League", notes: "Fly Location: Unova Pokemon League going Down and Right into the cave", completed: false },
-            { quest: "Darkrai", location: "Striaton City", notes: "Fly Location: Striaton City (Dream World) - Location and dates: Dream of Grass: Tuesday and Sunday - Dream of Water: Monday, Wednesday, Friday - Dream of Fire: Thursday and Saturday", completed: false },
-            { quest: "Heatran", location: "Nuvema Town", notes: "Fly Location: Nuvema Town going Left (Surf) - Requirements: Magma Stone- 5 different locations stone can spawn", completed: false },
-            { quest: "Reshiram", location: "Nimbasa City", notes: "Fly Location: Nimbasa City going Left (Driftveil Bridge Cave)", completed: false },
-            { quest: "Volcarona", location: "Castelia City", notes: "Locations: Desert Resort (Relic Castle), Relic Castle (Relic Pass)", completed: false },
-            { quest: "Regigigas and Regi Trio", location: "Icirrus City", notes: "Fly Location: Icirrus City going Downwards (Twist Mountain)", completed: false },
-            { quest: "Zekrom", location: "Icirrus City", notes: "Fly Location: Icirrus City going Upwards (Dragonspiral Tower)", completed: false },
-            { quest: "Officer Jenny", location: "U3, U11, Lacunosa Town, Icirrus City", notes: "Recommended Route U3\n• Fish Pokemon In Striaton City - 120 XP\n• Defeat Pokemon on Route U3 - 165 XP\n• Defeat Pidove on Route U3 - 150 XP\n• Defeat Wild Pokemon on Route U3 - 180 XP\n\nRecommended Route U11\n• Challenge Talon, Samplada, and Corin on Route U11 - 99 XP\n\nRecommended Lacunosa Town\n• Defeat Pokemon on the Island (Route U13) - 40-80 XP\n• Defeat Pokemon on the Island - 40-80 XP\n• Defeat Golbat and Tangela - 50-100 XP\n• Defeat Pokemon on Route U12 - 45-75 XP\n• Defeat Pokemon on Route U13 - 40-80 XP\n\nRecommended icirrus City\n• Defeat Palpitoad on Route U8 - 84 XP\n• Defeat Pokemon south of Iccirus City - 84 XP", completed: false }
+            { quest: "Bookshelves", location: "(Every City)", category: "Daily", xp: "5-15 XP", isBookshelves: true, notes: "Visit each city and enter each pokecenter. Interact with the bookshelves to claim the xp.", completed: false },
+            { quest: "Village Bridge Sandwiches", location: "Village Bridge", category: "Daily", notes: "Fly Location: Lacunosa, go left and go down under the bridge", completed: false },
+            { quest: "Feed Patrat", location: "Nuvema Town", category: "Daily", notes: "Fly Location: Nuvema and interact with the Patrat - This quest requires 1 Berry of any kind", completed: false },
+            { quest: "Shaymin Egg", location: "Lacunosa Town", category: "Daily", notes: "Fly Location: Lacunosa, go left and interact with the flowers", completed: false },
+            { quest: "Unova E4", location: "Unova Pokémon League", category: "Daily", notes: "Fly Location: Unova Pokémon League", completed: false },
+            { quest: "Black Tower", location: "Black City", category: "Daily", notes: "Fly Location: Black City", completed: false },
+            { quest: "Trasure and Pots", location: "Dragonspiral Tower", category: "Daily", notes: "Fly Location: Icirrus City, go upwards towards Dragonspiral Tower, talk to Travis", completed: false },
+            { quest: "Pokémon World Tournament", location: "Pokémon World Tournament", category: "Daily", notes: "Fly Location: Driftveil City, go downwards", completed: false },
+            { quest: "Royal Unova", location: "Castelia City", category: "Daily", notes: "Fly Location: Castelia City, go down towards the ship and talk to Captain Royal to get on the ship", completed: false },
+            { quest: "Royal Unova Bonus XP", location: "Castelia City", category: "Daily", notes: "Fly Location: Castelia City, go down towards the ship and talk to Captain Royal to get on the ship. Once inside, talk to any NPC to gain 50 xp", completed: false },
+            { quest: "Dreamyard Basement", location: "Dreamyard Ruins", category: "Daily", notes: "Fly Location: Striaton City, go right towards the Dreamyard Ruins. Use force to push the boulder and go down and left, take the stairs down, talk to the NPC in the middle of the room and check the boxes until you find the 3 items required.", mapUrl: "https://i.imgur.com/YsP3EHu.jpeg", completed: false },
+            { quest: "Dreamyard Munnas", location: "Dreamyard Ruins", category: "Daily", notes: "Fly Location: Striaton City, go right towards the Dreamyard Ruins. Interact with scientist first", completed: false },
+            { quest: "Wingull Grams", location: "Lacunosa Beach", category: "Daily", notes: "Fly Location: Lacunosa, go right and down on the beach and interact with Vinny and find the 3 grams on the beach - Note: they could be anything! A pokéball, the sand castle, a rock... I'll provide some screenshots of the locations.", completed: false },
+            { quest: "White Forest", location: "White Forest", category: "Daily", notes: "Fly Location: Black City, enter the White Forest on the far left", completed: false },
+            { quest: "White Forest Logs", location: "White Forest", category: "Daily", notes: "Fly Location: Black City, interact with the logs or fight wild pokemons", completed: false },
+            { quest: "Cynthia (Boss)", location: "Undella Town", category: "Daily", notes: "Fly Location: Undella Town first house on the right, left of the pokecenter. Note: this is a daily fight only in summer and spring, it can only be done once during winter and fall.", completed: false },
+            { quest: "Ghost", location: "Nimbasa City", category: "Boss", notes: "Fly Location: Nimbasa City going Up and Right (Marvelous Bridge)", completed: false },
+            { quest: "Nimbasa Stadium", location: "Nimbasa City", category: "Daily", notes: "Fly Location: Nimbasa City, Two Tents going Upwards", completed: false },
+            { quest: "N (Boss)", location: "Nimbasa City", category: "Weekly", notes: "Fly Location: Nimbasa City Ferris Wheel on the Right. Note: This is a weekly boss only available on FRIDAY.", completed: false },
+            { quest: "The Riches", location: "Undella Town", category: "Boss", notes: "Fly Location: Undella Town, first house on the left", completed: false },
+            { quest: "Kyurem", location: "Humilau City", category: "Boss", notes: "Fly Location: Humilau City going Left (Giant Chasm). Note: Take the quest outside the cave first!", completed: false },
+            { quest: "Cheren", location: "Unova Pokémon League", category: "Boss", notes: "Fly Location: Unova Pokemon League going Down and Right into the cave", completed: false },
+            { quest: "Darkrai", location: "Striaton City", category: "Boss", notes: "Fly Location: Striaton City (Dream World) - Location and dates: Dream of Grass: Tuesday and Sunday - Dream of Water: Monday, Wednesday, Friday - Dream of Fire: Thursday and Saturday", completed: false },
+            { quest: "Heatran", location: "Nuvema Town", category: "Boss", notes: "Fly Location: Nuvema Town going Left (Surf) - Requirements: Magma Stone- 5 different locations stone can spawn", completed: false },
+            { quest: "Reshiram", location: "Nimbasa City", category: "Boss", notes: "Fly Location: Nimbasa City going Left (Driftveil Bridge Cave)", completed: false },
+            { quest: "Volcarona", location: "Castelia City", category: "Boss", notes: "Locations: Desert Resort (Relic Castle), Relic Castle (Relic Pass)", completed: false },
+            { quest: "Regigigas and Regi Trio", location: "Icirrus City", category: "Boss", notes: "Fly Location: Icirrus City going Downwards (Twist Mountain)", completed: false },
+            { quest: "Zekrom", location: "Icirrus City", category: "Boss", notes: "Fly Location: Icirrus City going Upwards (Dragonspiral Tower)", completed: false },
+            { quest: "Officer Jenny", location: "U3, U11, Lacunosa Town, Icirrus City", category: "Daily", notes: "Recommended Route U3\n• Fish Pokemon In Striaton City - 120 XP\n• Defeat Pokemon on Route U3 - 165 XP\n• Defeat Pidove on Route U3 - 150 XP\n• Defeat Wild Pokemon on Route U3 - 180 XP\n\nRecommended Route U11\n• Challenge Talon, Samplada, and Corin on Route U11 - 99 XP\n\nRecommended Lacunosa Town\n• Defeat Pokemon on the Island (Route U13) - 40-80 XP\n• Defeat Pokemon on the Island - 40-80 XP\n• Defeat Golbat and Tangela - 50-100 XP\n• Defeat Pokemon on Route U12 - 45-75 XP\n• Defeat Pokemon on Route U13 - 40-80 XP\n\nRecommended icirrus City\n• Defeat Palpitoad on Route U8 - 84 XP\n• Defeat Pokemon south of Iccirus City - 84 XP", completed: false }
         ];
 
         /* --- SUMMER EVENT QUESTS DATA --- */
@@ -1577,12 +1663,29 @@
         let activeNoteIndex = null;
         let currentMapUrl = "";
         let currentRewardsUrl = "";
+        let categorySortAsc = true;
+
+        const categoryWeights = {
+            "Daily": 1,
+            "Boss": 2,
+            "Weekly": 3
+        };
 
         const container = document.getElementById('questsContainer');
         const noteTitle = document.getElementById('noteTitle');
         const noteBody = document.getElementById('noteBody');
         const questMapBtn = document.getElementById('questMapBtn');
         const questRewardsBtn = document.getElementById('questRewardsBtn');
+
+        function sortUnovaByCategory() {
+            unovaQuestsData.sort((a, b) => {
+                const weightA = categoryWeights[a.category] || 99;
+                const weightB = categoryWeights[b.category] || 99;
+                return categorySortAsc ? weightA - weightB : weightB - weightA;
+            });
+            categorySortAsc = !categorySortAsc;
+            renderQuests();
+        }
 
         function switchTab(tab) {
             currentTab = tab;
@@ -1592,6 +1695,12 @@
             document.getElementById('tabUnova').classList.toggle('active', tab === 'unova');
             document.getElementById('tabSummer').classList.toggle('active', tab === 'summer');
 
+            const btnUnova = document.getElementById('btnOptimizeRouteUnova');
+            const btnSummer = document.getElementById('btnOptimizeRouteSummer');
+
+            if (btnUnova) btnUnova.style.display = (tab === 'unova') ? 'block' : 'none';
+            if (btnSummer) btnSummer.style.display = (tab === 'summer') ? 'block' : 'none';
+
             const titleElem = document.getElementById('currentTabTitle');
             const phaseFilters = document.getElementById('phaseFiltersContainer');
             const mapSectionTitle = document.getElementById('mapSectionTitle');
@@ -1599,13 +1708,13 @@
             const summerMapSelector = document.getElementById('summerMapSelector');
 
             if (tab === 'unova') {
-                titleElem.innerText = "Unova Daily Quests";
+                titleElem.innerText = "Unova";
                 phaseFilters.style.display = "none";
                 summerMapSelector.style.display = "none";
                 if (mapSectionTitle) mapSectionTitle.innerText = "Unova Map";
                 if (mapImage) mapImage.src = "https://i.imgur.com/WZNFxES.jpeg";
             } else {
-                titleElem.innerText = "Summer Event Daily Quests";
+                titleElem.innerText = "Summer Event";
                 phaseFilters.style.display = "flex";
                 summerMapSelector.style.display = "flex";
                 if (mapSectionTitle) mapSectionTitle.innerText = "Summer Event Map";
@@ -1615,6 +1724,14 @@
             mainMapController.reset();
             renderTableHeader();
             renderQuests();
+        }
+
+        function optimizeRouteUnova() {
+            console.log("Azione 'Optimize Route' eseguita per la tab: Unova");
+        }
+
+        function optimizeRouteSummer() {
+            console.log("Azione 'Optimize Route' eseguita per la tab: Summer Event");
         }
 
         function switchSummerMap(mapKey) {
@@ -1654,6 +1771,12 @@
             if (currentTab === 'unova') {
                 tr.innerHTML = `
                     <th class="status-cell">Status</th>
+                    <th>
+                        <div class="category-header-wrapper">
+                            <span>Category</span>
+                            <button class="sort-btn" onclick="sortUnovaByCategory()" title="Sort Category">&#8645;</button>
+                        </div>
+                    </th>
                     <th>Quest</th>
                     <th>Location</th>
                     <th>XP Gain</th>
@@ -1693,10 +1816,15 @@
 
                 if (currentTab === 'unova') {
                     const xpText = data.xp ? data.xp : `<span style="color: var(--border-color);">-</span>`;
+                    let badgeClass = 'phase-badge';
+                    if (data.category === 'Boss') badgeClass = 'phase-badge boss-badge';
+                    else if (data.category === 'Weekly') badgeClass = 'phase-badge weekly-badge';
+
                     tr.innerHTML = `
                         <td class="status-cell">
                             <button class="toggle-btn" id="toggle-btn-${index}" onclick="toggleQuest(${index})" aria-label="Toggle quest status"></button>
                         </td>
+                        <td><span class="${badgeClass}">${data.category}</span></td>
                         <td class="quest-name">${data.quest}</td>
                         <td class="quest-location">${data.location}</td>
                         <td class="quest-xp">${xpText}</td>
