@@ -358,6 +358,22 @@
             gap: 12px;
         }
 
+        .section-subtitle-hint {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .tab-description-hint {
+            width: 100%;
+            font-size: 0.95rem;
+            color: var(--accent-yellow);
+            font-weight: 700;
+            margin-top: 4px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
         .map-instructions {
             font-size: 1.05rem;
             color: var(--text-muted);
@@ -1108,11 +1124,16 @@
             <!-- Pulsante linguetta sporgenti attaccati alla colonna - uno dedicato per ciascuna Tab -->
             <button class="optimize-route-tab" id="btnOptimizeRouteUnova" onclick="optimizeRouteUnova()">OPTIMIZE ROUTE</button>
 
-            <div class="section-header">
+            <div class="section-header" style="margin-bottom: 5px;">
                 <div class="section-title-group">
                     <h2 class="section-title" id="currentTabTitle">Unova</h2>
                     <span class="section-subtitle-hint">(Click on the Buttons to change status!)</span>
                 </div>
+            </div>
+
+            <!-- Tab Subtitle Text -->
+            <div class="tab-description-hint" id="tabDescriptionHint" style="display: none;">
+                Follow these quests in this exact order to optimize your route!
             </div>
 
             <!-- Phase Filters -->
@@ -1409,9 +1430,17 @@
         const bookshelvesState = {};
         bookshelvesCities.forEach(city => bookshelvesState[city] = false);
 
+        /* --- OFFICER JENNY QUESTS LIST --- */
+        const officerJennyQuests = [
+            "Officer Jenny U3",
+            "Officer Jenny U11",
+            "Officer Jenny Lacunosa Town",
+            "Officer Jenny Icirrus City"
+        ];
+
         /* --- UNOVA QUESTS DATA --- */
         const unovaQuestsData = [
-            { quest: "Bookshelves", location: "(Every City)", category: "Daily", xp: "5-15 XP", isBookshelves: true, notes: "Visit each city and enter each pokecenter. Interact with the bookshelves to claim the xp.", completed: false },
+            { quest: "Bookshelves", location: "(Every City)", category: "Daily", isBookshelves: true, notes: "Visit each city and enter each pokecenter. Interact with the bookshelves to claim the xp.", completed: false },
             { 
                 quest: "Abyssal Ruins", 
                 location: "Undella Bay", 
@@ -1470,10 +1499,10 @@
             { quest: "Volcarona", location: "Castelia City", category: "Boss", notes: "Locations: Desert Resort (Relic Castle), Relic Castle (Relic Pass)", completed: false },
             { quest: "Regigigas and Regi Trio", location: "Icirrus City", category: "Boss", notes: "Fly Location: Icirrus City going Downwards (Twist Mountain)", completed: false },
             { quest: "Zekrom", location: "Icirrus City", category: "Boss", notes: "Fly Location: Icirrus City going Upwards (Dragonspiral Tower)", completed: false },
-            { quest: "Officer Jenny", location: "U3, U11, Lacunosa Town, Icirrus City", category: "Daily", notes: "Recommended Route U3\n• Fish Pokemon In Striaton City - 120 XP\n• Defeat Pokemon on Route U3 - 165 XP\n• Defeat Pidove on Route U3 - 150 XP\n• Defeat Wild Pokemon on Route U3 - 180 XP\n\nRecommended Route U11\n• Challenge Talon, Samplada, and Corin on Route U11 - 99 XP\n\nRecommended Lacunosa Town\n• Defeat Pokemon on the Island (Route U13) - 40-80 XP\n• Defeat Pokemon on the Island - 40-80 XP\n• Defeat Golbat and Tangela - 50-100 XP\n• Defeat Pokemon on Route U12 - 45-75 XP\n• Defeat Pokemon on Route U13 - 40-80 XP\n\nRecommended Icirrus City\n• Defeat Palpitoad on Route U8 - 84 XP\n• Defeat Pokemon south of Iccirus City - 84 XP", completed: false }
+            { quest: "Officer Jenny", location: "U3, U11, Lacunosa Town, Icirrus City", category: "Daily", isOfficerJennyMaster: true, notes: "Recommended Route U3\n• Fish Pokemon In Striaton City - 120 XP\n• Defeat Pokemon on Route U3 - 165 XP\n• Defeat Pidove on Route U3 - 150 XP\n• Defeat Wild Pokemon on Route U3 - 180 XP\n\nRecommended Route U11\n• Challenge Talon, Samplada, and Corin on Route U11 - 99 XP\n\nRecommended Lacunosa Town\n• Defeat Pokemon on the Island (Route U13) - 40-80 XP\n• Defeat Pokemon on the Island - 40-80 XP\n• Defeat Golbat and Tangela - 50-100 XP\n• Defeat Pokemon on Route U12 - 45-75 XP\n• Defeat Pokemon on Route U13 - 40-80 XP\n\nRecommended Icirrus City\n• Defeat Palpitoad on Route U8 - 84 XP\n• Defeat Pokemon south of Iccirus City - 84 XP", completed: false }
         ];
 
-        /* --- UNOVA OPTIMIZED ROUTE DATA (Con note specifiche per Bookshelves) --- */
+        /* --- UNOVA OPTIMIZED ROUTE DATA --- */
         const unovaOptimizedData = [
             { quest: "Bookshelves", location: "Aspertia City", category: "Daily", isBookshelves: true, notes: "Enter the citiy's Pokecenter and interact with a bookshelf.", completed: false },
             { quest: "Bookshelves", location: "Floccesy Town", category: "Daily", isBookshelves: true, notes: "Enter the citiy's Pokecenter and interact with a bookshelf.", completed: false },
@@ -1485,16 +1514,16 @@
             { quest: "Zekrom", location: "Icirrus City", category: "Boss", notes: "Fly Location: Icirrus City going Upwards (Dragonspiral Tower)", completed: false },
             { quest: "Trasure and Pots", location: "Icirrus City", category: "Daily", notes: "Fly Location: Icirrus City, go upwards towards Dragonspiral Tower, talk to Travis", completed: false },
             { quest: "Regigigas and Regi Trio", location: "Icirrus City", category: "Boss", notes: "Fly Location: Icirrus City going Downwards (Twist Mountain)", completed: false },
-            { quest: "Officer Jenny", location: "Icirrus City", category: "Daily", notes: "Recommended Route U3\n• Fish Pokemon In Striaton City - 120 XP\n• Defeat Pokemon on Route U3 - 165 XP\n• Defeat Pidove on Route U3 - 150 XP\n• Defeat Wild Pokemon on Route U3 - 180 XP\n\nRecommended Route U11\n• Challenge Talon, Samplada, and Corin on Route U11 - 99 XP\n\nRecommended Lacunosa Town\n• Defeat Pokemon on the Island (Route U13) - 40-80 XP\n• Defeat Pokemon on the Island - 40-80 XP\n• Defeat Golbat and Tangela - 50-100 XP\n• Defeat Pokemon on Route U12 - 45-75 XP\n• Defeat Pokemon on Route U13 - 40-80 XP\n\nRecommended Icirrus City\n• Defeat Palpitoad on Route U8 - 84 XP\n• Defeat Pokemon south of Iccirus City - 84 XP", completed: false },
+            { quest: "Officer Jenny Icirrus City", location: "Icirrus City", category: "Daily", isOfficerJennySingle: true, jennyKey: "Officer Jenny Icirrus City", notes: "Recommended Icirrus City\n• Defeat Palpitoad on Route U8 - 84 XP\n• Defeat Pokemon south of Iccirus City - 84 XP", completed: false },
             { quest: "Bookshelves", location: "Opelucid City", category: "Daily", isBookshelves: true, notes: "Enter the citiy's Pokecenter and interact with a bookshelf.", completed: false },
             { quest: "Village Bridge Sandwiches", location: "Opelucid City", category: "Daily", notes: "Fly Location: Lacunosa, go left and go down under the bridge", completed: false },
-            { quest: "Officer Jenny U11", location: "Opelucid City", category: "Daily", notes: "Recommended Route U11\n• Challenge Talon, Samplada, and Corin on Route U11 - 99 XP", completed: false },
+            { quest: "Officer Jenny U11", location: "Opelucid City", category: "Daily", isOfficerJennySingle: true, jennyKey: "Officer Jenny U11", notes: "Recommended Route U11\n• Challenge Talon, Samplada, and Corin on Route U11 - 99 XP", completed: false },
             { quest: "Unova E4", location: "Unova Pokémon League", category: "Daily", notes: "Fly Location: Unova Pokémon League", completed: false },
             { quest: "Cheren", location: "Unova Pokémon League", category: "Boss", notes: "Fly Location: Unova Pokemon League going Down and Right into the cave", completed: false },
             { quest: "Bookshelves", location: "Lacunosa Town", category: "Daily", isBookshelves: true, notes: "Enter the citiy's Pokecenter and interact with a bookshelf.", completed: false },
             { quest: "Lacunosa Flowers", location: "Lacunosa Town", category: "Daily", notes: "Fly Location: Lacunosa, go left and interact with the flowers", completed: false },
             { quest: "Wingull Grams", location: "Lacunosa Town", category: "Daily", notes: "Fly Location: Lacunosa, go right and down on the beach and interact with Vinny and find the 3 grams on the beach - Note: they could be anything! A pokéball, the sand castle, a rock... I'll provide some screenshots of the locations.", completed: false },
-            { quest: "Officer Jenny", location: "Lacunosa Town", category: "Daily", notes: "Recommended Route U3\n• Fish Pokemon In Striaton City - 120 XP\n• Defeat Pokemon on Route U3 - 165 XP\n• Defeat Pidove on Route U3 - 150 XP\n• Defeat Wild Pokemon on Route U3 - 180 XP\n\nRecommended Route U11\n• Challenge Talon, Samplada, and Corin on Route U11 - 99 XP\n\nRecommended Lacunosa Town\n• Defeat Pokemon on the Island (Route U13) - 40-80 XP\n• Defeat Pokemon on the Island - 40-80 XP\n• Defeat Golbat and Tangela - 50-100 XP\n• Defeat Pokemon on Route U12 - 45-75 XP\n• Defeat Pokemon on Route U13 - 40-80 XP\n\nRecommended Icirrus City\n• Defeat Palpitoad on Route U8 - 84 XP\n• Defeat Pokemon south of Iccirus City - 84 XP", completed: false },
+            { quest: "Officer Jenny Lacunosa Town", location: "Lacunosa Town", category: "Daily", isOfficerJennySingle: true, jennyKey: "Officer Jenny Lacunosa Town", notes: "Recommended Lacunosa Town\n• Defeat Pokemon on the Island (Route U13) - 40-80 XP\n• Defeat Pokemon on the Island - 40-80 XP\n• Defeat Golbat and Tangela - 50-100 XP\n• Defeat Pokemon on Route U12 - 45-75 XP\n• Defeat Pokemon on Route U13 - 40-80 XP", completed: false },
             { quest: "Bookshelves", location: "Humilau City", category: "Daily", isBookshelves: true, notes: "Enter the citiy's Pokecenter and interact with a bookshelf.", completed: false },
             { quest: "Kyurem", location: "Humilau City", category: "Boss", notes: "Fly Location: Humilau City going Left (Giant Chasm). Note: Take the quest outside the cave first!", completed: false },
             { quest: "Bookshelves", location: "Undella Town", category: "Daily", isBookshelves: true, notes: "Enter the citiy's Pokecenter and interact with a bookshelf.", completed: false },
@@ -1533,12 +1562,13 @@
             { quest: "Volcarona", location: "Castelia City", category: "Boss", notes: "Locations: Desert Resort (Relic Castle), Relic Castle (Relic Pass)", completed: false },
             { quest: "Bookshelves", location: "Nacrene City", category: "Daily", isBookshelves: true, notes: "Enter the citiy's Pokecenter and interact with a bookshelf.", completed: false },
             { quest: "Bookshelves", location: "Striaton City", category: "Daily", isBookshelves: true, notes: "Enter the citiy's Pokecenter and interact with a bookshelf.", completed: false },
-            { quest: "Officer Jenny U3", location: "Striaton City", category: "Daily", notes: "Recommended Route U3\n• Fish Pokemon In Striaton City - 120 XP\n• Defeat Pokemon on Route U3 - 165 XP\n• Defeat Pidove on Route U3 - 150 XP\n• Defeat Wild Pokemon on Route U3 - 180 XP", completed: false },
+            { quest: "Officer Jenny U3", location: "Striaton City", category: "Daily", isOfficerJennySingle: true, jennyKey: "Officer Jenny U3", notes: "Recommended Route U3\n• Fish Pokemon In Striaton City - 120 XP\n• Defeat Pokemon on Route U3 - 165 XP\n• Defeat Pidove on Route U3 - 150 XP\n• Defeat Wild Pokemon on Route U3 - 180 XP", completed: false },
             { quest: "Darkrai", location: "Striaton City", category: "Boss", notes: "Fly Location: Striaton City (Dream World) - Location and dates: Dream of Grass: Tuesday and Sunday - Dream of Water: Monday, Wednesday, Friday - Dream of Fire: Thursday and Saturday", completed: false },
             { quest: "Dreamyard Basement", location: "Striaton City", category: "Daily", notes: "Fly Location: Striaton City, go right towards the Dreamyard Ruins. Use force to push the boulder and go down and left, take the stairs down, talk to the NPC in the middle of the room and check the boxes until you find the 3 items required.", mapUrl: "https://i.imgur.com/YsP3EHu.jpeg", completed: false },
             { quest: "Dreamyard Munnas", location: "Striaton City", category: "Daily", notes: "Fly Location: Striaton City, go right towards the Dreamyard Ruins. Interact with scientist first", completed: false },
             { quest: "Bookshelves", location: "Accumula Town", category: "Daily", isBookshelves: true, notes: "Enter the citiy's Pokecenter and interact with a bookshelf.", completed: false },
-            { quest: "Feed Patrat", location: "Nuvema Town", category: "Daily", notes: "Fly Location: Nuvema and interact with the Patrat - This quest requires 1 Berry of any kind", completed: false }
+            { quest: "Feed Patrat", location: "Nuvema Town", category: "Daily", notes: "Fly Location: Nuvema and interact with the Patrat - This quest requires 1 Berry of any kind", completed: false },
+            { quest: "Heatran", location: "Nuvema Town", category: "Boss", notes: "Fly Location: Nuvema Town going Left (Surf) - Requirements: Magma Stone- 5 different locations stone can spawn", completed: false }
         ];
 
         /* --- SUMMER EVENT QUESTS DATA --- */
@@ -1800,6 +1830,7 @@
             if (btnUnova) btnUnova.style.display = (tab === 'unova') ? 'block' : 'none';
 
             const titleElem = document.getElementById('currentTabTitle');
+            const tabDescHint = document.getElementById('tabDescriptionHint');
             const phaseFilters = document.getElementById('phaseFiltersContainer');
             const mapSectionTitle = document.getElementById('mapSectionTitle');
             const mapImage = document.getElementById('mapImage');
@@ -1807,12 +1838,16 @@
 
             if (tab === 'unova' || tab === 'unovaOptimized') {
                 titleElem.innerText = (tab === 'unovaOptimized') ? "Unova Optimized" : "Unova";
+                if (tabDescHint) {
+                    tabDescHint.style.display = (tab === 'unovaOptimized') ? "block" : "none";
+                }
                 phaseFilters.style.display = "none";
                 summerMapSelector.style.display = "none";
                 if (mapSectionTitle) mapSectionTitle.innerText = "Unova Map";
                 if (mapImage) mapImage.src = "https://i.imgur.com/WZNFxES.jpeg";
             } else {
                 titleElem.innerText = "Summer Event";
+                if (tabDescHint) tabDescHint.style.display = "none";
                 phaseFilters.style.display = "flex";
                 summerMapSelector.style.display = "flex";
                 if (mapSectionTitle) mapSectionTitle.innerText = "Summer Event Map";
@@ -1916,7 +1951,7 @@
                 tr.className = `quest-main-row ${data.completed ? 'completed' : ''}`;
                 tr.id = `quest-row-${index}`;
                 
-                const hasNotes = Boolean(data.notes || data.isBookshelves || data.subItems || data.mapsList);
+                const hasNotes = Boolean(data.notes || data.isBookshelves || data.isOfficerJennyMaster || data.subItems || data.mapsList);
                 const notesBtnHTML = hasNotes 
                     ? `<button class="notes-btn ${activeNoteIndex === index ? 'active' : ''}" id="notes-btn-${index}" onclick="openNotes(${index})">📝 Note</button>` 
                     : `<span style="color: var(--border-color);">-</span>`;
@@ -1975,20 +2010,42 @@
             if (currentTab === 'unova' || currentTab === 'unovaOptimized') {
                 if (questItem.isBookshelves) {
                     const cityName = questItem.location;
-                    if (cityName !== "(Every City)") {
+                    if (cityName === "(Every City)") {
+                        bookshelvesCities.forEach(city => {
+                            bookshelvesState[city] = questItem.completed;
+                        });
+                        unovaOptimizedData.forEach(q => {
+                            if (q.isBookshelves) q.completed = questItem.completed;
+                        });
+                    } else {
                         bookshelvesState[cityName] = questItem.completed;
+                        unovaOptimizedData.forEach(q => {
+                            if (q.isBookshelves && q.location === cityName) {
+                                q.completed = questItem.completed;
+                            }
+                        });
+
+                        const allCitiesChecked = bookshelvesCities.every(city => bookshelvesState[city]);
+                        unovaQuestsData.forEach(q => { if (q.isBookshelves) q.completed = allCitiesChecked; });
                     }
-                    
-                    // Sincronizza lo stato fra la riga specifica in Optimized e la città corrispondente nella lista Bookshelves di Unova
+                } else if (questItem.isOfficerJennyMaster) {
+                    // Cliccato il pulsante status master per Officer Jenny in Unova
                     unovaOptimizedData.forEach(q => {
-                        if (q.isBookshelves && q.location === cityName) {
+                        if (q.isOfficerJennySingle) {
                             q.completed = questItem.completed;
                         }
                     });
+                } else if (questItem.isOfficerJennySingle) {
+                    // Cliccato il pulsante status di una singola Officer Jenny
+                    const allJennyChecked = unovaOptimizedData
+                        .filter(q => q.isOfficerJennySingle)
+                        .every(q => q.completed);
 
-                    // Se tutte le città sono spuntate, spunta anche Bookshelves generale in Unova
-                    const allCitiesChecked = bookshelvesCities.every(city => bookshelvesState[city]);
-                    unovaQuestsData.forEach(q => { if (q.isBookshelves) q.completed = allCitiesChecked; });
+                    unovaQuestsData.forEach(q => {
+                        if (q.isOfficerJennyMaster) {
+                            q.completed = allJennyChecked;
+                        }
+                    });
                 } else {
                     const targetName = questItem.quest;
                     unovaQuestsData.forEach(q => { if (q.quest === targetName) q.completed = questItem.completed; });
@@ -2001,12 +2058,15 @@
                 row.classList.toggle('completed', questItem.completed);
             }
             
-            if (questItem.isBookshelves && currentTab !== 'unova') {
-                if (questItem.location !== "(Every City)") {
-                    bookshelvesState[questItem.location] = questItem.completed;
-                }
+            if (questItem.isBookshelves) {
                 if (activeNoteIndex === index) {
                     renderBookshelvesNotes(questItem);
+                }
+            }
+
+            if (questItem.isOfficerJennyMaster) {
+                if (activeNoteIndex === index) {
+                    renderOfficerJennyNotes(questItem);
                 }
             }
 
@@ -2032,7 +2092,6 @@
 
             const allCompleted = bookshelvesCities.every(city => bookshelvesState[city]);
             
-            // Sincronizza spunta città con la corrispettiva riga in Unova Optimized e Unova
             unovaQuestsData.forEach(q => {
                 if (q.isBookshelves) q.completed = allCompleted;
             });
@@ -2042,7 +2101,27 @@
                 }
             });
 
-            if (currentTab === 'unova' || currentTab === 'unovaOptimized') {
+            renderQuests();
+        }
+
+        function toggleOfficerJennySingle(jennyKey) {
+            const targetQuest = unovaOptimizedData.find(q => q.jennyKey === jennyKey);
+            if (targetQuest) {
+                targetQuest.completed = !targetQuest.completed;
+
+                const jennyElem = document.getElementById(`jenny-item-${jennyKey.replace(/\s+/g, '-')}`);
+                if (jennyElem) {
+                    jennyElem.classList.toggle('completed', targetQuest.completed);
+                }
+
+                const allJennyChecked = unovaOptimizedData
+                    .filter(q => q.isOfficerJennySingle)
+                    .every(q => q.completed);
+
+                unovaQuestsData.forEach(q => {
+                    if (q.isOfficerJennyMaster) q.completed = allJennyChecked;
+                });
+
                 renderQuests();
             }
         }
@@ -2077,6 +2156,50 @@
                 `;
             });
             html += `</div>`;
+            noteBody.innerHTML = html;
+        }
+
+        function renderOfficerJennyNotes(data) {
+            const paragraphs = [
+                {
+                    title: "Recommended Route U3",
+                    body: "• Fish Pokemon In Striaton City - 120 XP\n• Defeat Pokemon on Route U3 - 165 XP\n• Defeat Pidove on Route U3 - 150 XP\n• Defeat Wild Pokemon on Route U3 - 180 XP",
+                    key: "Officer Jenny U3"
+                },
+                {
+                    title: "Recommended Route U11",
+                    body: "• Challenge Talon, Samplada, and Corin on Route U11 - 99 XP",
+                    key: "Officer Jenny U11"
+                },
+                {
+                    title: "Recommended Lacunosa Town",
+                    body: "• Defeat Pokemon on the Island (Route U13) - 40-80 XP\n• Defeat Pokemon on the Island - 40-80 XP\n• Defeat Golbat and Tangela - 50-100 XP\n• Defeat Pokemon on Route U12 - 45-75 XP\n• Defeat Pokemon on Route U13 - 40-80 XP",
+                    key: "Officer Jenny Lacunosa Town"
+                },
+                {
+                    title: "Recommended Icirrus City",
+                    body: "• Defeat Palpitoad on Route U8 - 84 XP\n• Defeat Pokemon south of Iccirus City - 84 XP",
+                    key: "Officer Jenny Icirrus City"
+                }
+            ];
+
+            let html = '';
+            paragraphs.forEach(p => {
+                const targetQuest = unovaOptimizedData.find(q => q.jennyKey === p.key);
+                const isChecked = targetQuest ? targetQuest.completed : false;
+                const safeJennyId = p.key.replace(/\s+/g, '-');
+
+                html += `<div style="margin-bottom: 15px;">`;
+                html += `<strong>${p.title}</strong>\n${p.body}`;
+                html += `<div class="sub-checklist" style="margin-top: 8px;">
+                            <div class="sub-checklist-item ${isChecked ? 'completed' : ''}" id="jenny-item-${safeJennyId}" onclick="toggleOfficerJennySingle('${p.key}')">
+                                <div class="mini-toggle-btn"></div>
+                                <span>${p.key}</span>
+                            </div>
+                         </div>`;
+                html += `</div>`;
+            });
+
             noteBody.innerHTML = html;
         }
 
@@ -2118,6 +2241,8 @@
 
                 if (data.isBookshelves && currentTab === 'unova') {
                     renderBookshelvesNotes(data);
+                } else if (data.isOfficerJennyMaster && currentTab === 'unova') {
+                    renderOfficerJennyNotes(data);
                 } else if (data.subItems) {
                     renderSubChecklistNotes(data, index);
                 } else {
