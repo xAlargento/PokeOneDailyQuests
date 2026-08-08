@@ -77,7 +77,7 @@
             letter-spacing: 1px;
         }
 
-        /* Interactive Pokemon Squad (Disposti in verticale & Ingranditi del 175%) */
+        /* Interactive Pokemon Squad */
         .pokemon-squad-grid {
             display: flex;
             flex-direction: column;
@@ -91,7 +91,7 @@
         }
 
         .squad-poke {
-            width: 149px; /* 85px * 1.75 = ~149px */
+            width: 149px;
             height: 149px;
             object-fit: contain;
             image-rendering: pixelated;
@@ -118,8 +118,6 @@
         }
 
         /* --- ANIMAZIONI SPECIFICHE POKÉMON --- */
-        
-        /* Mudbray Stomp */
         .squad-poke.mudbray-stomp {
             animation: mudbrayBounce 0.5s ease-in-out;
         }
@@ -130,7 +128,6 @@
             70% { transform: translateY(-5px) scale(1.05); }
         }
 
-        /* Snorlax Sleeping */
         .squad-poke.snorlax-sleeping {
             transform: rotate(90deg) translate(10px, -10px) !important;
             transition: transform 0.5s ease;
@@ -359,13 +356,6 @@
             display: flex;
             align-items: center;
             gap: 12px;
-        }
-
-        .section-subtitle-hint {
-            font-size: 1.15rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-style: italic;
         }
 
         .map-instructions {
@@ -615,6 +605,12 @@
             border: 1px solid var(--accent-yellow);
         }
 
+        .phase-badge.boss-badge {
+            background: rgba(255, 17, 85, 0.15);
+            color: var(--pokemon-red);
+            border-color: var(--pokemon-red);
+        }
+
         .quest-name {
             color: var(--text-color);
             transition: color 0.2s ease, text-decoration 0.2s ease;
@@ -735,6 +731,12 @@
             align-items: center;
         }
 
+        .notes-card-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
         .notes-card-body {
             font-size: 1.25rem;
             color: var(--text-color);
@@ -758,20 +760,20 @@
             border: 1px solid rgba(255, 203, 5, 0.3);
         }
 
-        .notes-map-btn {
+        .notes-action-btn {
             background-color: var(--pokemon-blue);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 8px;
             padding: 6px 14px;
             font-family: 'Press Start 2P', monospace;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 0 10px rgba(59, 76, 202, 0.5);
         }
 
-        .notes-map-btn:hover {
+        .notes-action-btn:hover {
             background-color: #4c5fd7;
             transform: scale(1.05);
         }
@@ -817,7 +819,7 @@
             color: var(--text-muted);
         }
 
-        /* --- MODAL FOR QUEST MAP --- */
+        /* --- MODAL FOR QUEST MAP & REWARDS --- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -960,7 +962,7 @@
             <h3 class="hud-title">Fun HUD</h3>
         </div>
 
-        <!-- Pokémon Squad Vertical Column (Ingranditi del 175%) -->
+        <!-- Pokémon Squad Vertical Column -->
         <div class="pokemon-squad-grid">
             <img class="squad-poke" id="pokePikachu" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png" alt="Pikachu" title="Pikachu - Click to hear anime cry!" onclick="triggerPikachu()">
             <img class="squad-poke" id="pokeLapras" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/131.png" alt="Lapras" title="Lapras - Click for Water Spray!" onclick="triggerLapras(event)">
@@ -1033,9 +1035,9 @@
                 </div>
             </div>
 
-            <!-- Phase Filters (Only Visible in Summer Event) -->
+            <!-- Phase Filters -->
             <div class="phase-filters" id="phaseFiltersContainer" style="display: none;">
-                <span class="phase-filter-label">Filter Phases:</span>
+                <span class="phase-filter-label">Filter Category:</span>
                 <button class="phase-btn active" id="phaseBtn1" onclick="togglePhase(1)">Phase 1</button>
                 <button class="phase-btn active" id="phaseBtn2" onclick="togglePhase(2)">Phase 2</button>
                 <button class="phase-btn active" id="phaseBtn3" onclick="togglePhase(3)">Phase 3</button>
@@ -1083,7 +1085,10 @@
             <div class="notes-card">
                 <div class="notes-card-header">
                     <span id="noteTitle">Select a Quest</span>
-                    <button id="questMapBtn" class="notes-map-btn" style="display: none;" onclick="openQuestMapModal()">🗺️ Map</button>
+                    <div class="notes-card-actions">
+                        <button id="questMapBtn" class="notes-action-btn" style="display: none;" onclick="openQuestImageModal('map')">🗺️ Map</button>
+                        <button id="questRewardsBtn" class="notes-action-btn" style="display: none;" onclick="openQuestImageModal('rewards')">🎁 Rewards</button>
+                    </div>
                 </div>
                 <div class="notes-card-body" id="noteBody">
                     <span class="notes-placeholder">Click on any 📝 Note button in the list to display specific quest instructions here.</span>
@@ -1097,15 +1102,15 @@
         Note: these are not ALL the quests, these are just, in my humble experience, the most efficient ones to do daily. The website <a href="https://pokeonecommunity.com/" target="_blank" rel="noopener noreferrer">https://pokeonecommunity.com/</a> has additional information that you may be looking for. This tool is only intended to guide and facilitate your daily routine :)
     </footer>
 
-    <!-- Interactive Quest Map Modal -->
+    <!-- Interactive Quest Map & Rewards Modal -->
     <div class="modal-overlay" id="questMapModal">
         <div class="modal-content">
             <div class="modal-header">
-                <span class="modal-title" id="modalMapTitle">Quest Map</span>
+                <span class="modal-title" id="modalMapTitle">Viewer</span>
                 <button class="close-modal-btn" onclick="closeQuestMapModal()">X</button>
             </div>
             <div class="map-wrapper" id="modalMapWrapper">
-                <img class="map-image" id="modalMapImage" src="" alt="Quest Map">
+                <img class="map-image" id="modalMapImage" src="" alt="Quest Image Viewer">
             </div>
         </div>
     </div>
@@ -1129,8 +1134,6 @@
         }
 
         /* --- SQUAD POKÉMON INTERACTION LOGIC --- */
-
-        // 1. Pikachu: Anime Voice
         function triggerPikachu() {
             playSound('pikachuAudio');
             const el = document.getElementById('pokePikachu');
@@ -1139,7 +1142,6 @@
             setTimeout(() => { el.style.transform = ""; }, 300);
         }
 
-        // 2. Lapras: Water Spray Effect
         function triggerLapras(e) {
             playSound('laprasAudio');
             
@@ -1173,7 +1175,7 @@
                 particles.forEach(p => {
                     p.x += p.vx;
                     p.y += p.vy;
-                    p.vy += 0.4; // Gravity
+                    p.vy += 0.4;
                     p.alpha -= 0.015;
 
                     if (p.alpha > 0) {
@@ -1194,7 +1196,6 @@
             animateWater();
         }
 
-        // 3. Scizor: Slash Screen Effect
         function triggerScizor() {
             playSound('scizorAudio');
             const overlay = document.getElementById('scizorOverlay');
@@ -1205,16 +1206,14 @@
             }, 2000);
         }
 
-        // 4. Mudbray: Bounce & Cry
         function triggerMudbray() {
             playSound('mudbrayAudio');
             const el = document.getElementById('pokeMudbray');
             el.classList.remove('mudbray-stomp');
-            void el.offsetWidth; // force reflow
+            void el.offsetWidth;
             el.classList.add('mudbray-stomp');
         }
 
-        // 5. Snorlax: Lies down, yawns, Zzz effect
         function triggerSnorlax() {
             playSound('snorlaxAudio');
             const el = document.getElementById('pokeSnorlax');
@@ -1233,7 +1232,6 @@
             }, 2000);
         }
 
-        // 6. Bibarel: Run & Cry
         function triggerBibarelRun() {
             playSound('bibarelAudio');
             const bibarel = document.getElementById('bibarelMascot');
@@ -1369,21 +1367,21 @@
             { 
                 quest: "Swimmers in Danger (Baywatch)", 
                 phase: 1, 
-                notes: "Everyday, there are 3 swimmers who are being attacked by wild Pokémon. This is your chance to be a lifeguard and help these poor swimmers. They can be found on the maps in the event with water: <span class=\"note-location\">Paradise bay</span>, <span class=\"note-location\">Paradise sport</span>, <span class=\"note-location\">cliffside waters</span>, and <span class=\"note-location\">fallen fields</span>. These swimmers will be in different spots everyday.", 
+                notes: "Everyday, there are 3 swimmers who are being attacked by wild Pokémon. This is your chance to be a lifeguard and help these poor swimmers. They can be found on the maps in the event with water: <span class=\"note-location\">\"Paradise bay\"</span>, <span class=\"note-location\">\"Paradise sport\"</span>, <span class=\"note-location\">\"cliffside waters\"</span>, and <span class=\"note-location\">\"fallen fields\"</span>. These swimmers will be in different spots everyday.", 
                 mapUrl: "https://pokeonecommunity.com/wp-content/uploads/2024/06/map.png",
                 completed: false 
             },
             { 
                 quest: "Agatha’s Page", 
                 phase: 1, 
-                notes: "Agatha is writing a book and the wind carries one of her pages away every day. It is your job to find the missing page and return it to Agatha. She can be found on the beach of <span class=\"note-location\">Paradise Bay</span>. The page can be found on the beaches of many of the maps at the event. This quest will give 1 sun coin per day.\n\nopen the map for the pages location", 
+                notes: "Agatha is writing a book and the wind carries one of her pages away every day. It is your job to find the missing page and return it to Agatha. She can be found on the beach of <span class=\"note-location\">\"Paradise Bay\"</span>. The page can be found on the beaches of many of the maps at the event. This quest will give 1 sun coin per day.\n\nopen the map for the pages location", 
                 mapUrl: "https://pokeonecommunity.com/wp-content/uploads/2024/07/Summermaplabled-3-1024x996.png",
                 completed: false 
             },
             { 
                 quest: "Fallen Fields Treasure Hunt", 
                 phase: 1, 
-                notes: "ARG! there be hidden treasure in <span class=\"note-location\">Fallen Fields</span>. You will find a statue that will give you a quest each day to find the hidden treasure. The statue will tell you what direction to look each day for the treasure. Once you find the hidden spot, you will fight some Pokémon.", 
+                notes: "ARG! there be hidden treasure in <span class=\"note-location\">\"Fallen Fields\"</span>. You will find a statue that will give you a quest each day to find the hidden treasure. The statue will tell you what direction to look each day for the treasure. Once you find the hidden spot, you will fight some Pokémon.", 
                 completed: false 
             },
             { 
@@ -1513,8 +1511,59 @@
                 subState: {},
                 completed: false 
             },
-            { quest: "Phase 2 Daily Quest Sample", phase: 2, notes: "Coming soon...", completed: false },
-            { quest: "Phase 3 Daily Quest Sample", phase: 3, notes: "Coming soon...", completed: false }
+            
+            /* BOSSES INTEGRATED INTO THEIR RESPECTIVE PHASES */
+            { 
+                quest: "Wailord", 
+                phase: 1, 
+                isBoss: true,
+                notes: "Location: <span class=\"note-location\">\"Forsaken Ruins\"</span>\n\nThe Wailord Boss has 4 different variations of Wailord movesets. One will be chosen randomly, plus the 5 other Pokémon from the pool. You can choose 3 different difficulties: Beginner, Trainer, and Champion. The rewards scale to be much better on higher difficulties!", 
+                rewardsUrl: "https://i.imgur.com/U7MMApx.png",
+                completed: false 
+            },
+            { 
+                quest: "Mr Krabbs", 
+                phase: 1, 
+                isBoss: true,
+                notes: "After finding all the beach balls, an NPC named Beachbum Riku will appear in <span class=\"note-location\">\"Paradise Bay\"</span>. He will ask you to find his missing Krabbys. There are 5 missing Krabbys on the beaches of the Summer event. After you find all the Krabby, Mr. Krabbs will appear between <span class=\"note-location\">\"Pier Paradise\"</span> and <span class=\"note-location\">\"Paradise Sport\"</span> as a daily boss!", 
+                mapUrl: "https://pokeonecommunity.com/wp-content/uploads/2024/07/Krabby-map-1024x871.png",
+                rewardsUrl: "https://i.imgur.com/eLHCTem.png",
+                completed: false 
+            },
+            { 
+                quest: "Jeck Spearow", 
+                phase: 1, 
+                isBoss: true,
+                notes: "You will find Capt. Jeck on the <span class=\"note-location\">\"Pelipper’s Grace\"</span>. Complete his last riddle, and he will give you a thrilling battle.", 
+                rewardsUrl: "https://i.imgur.com/ESMsfKw.png",
+                completed: false 
+            },
+            { 
+                quest: "Phase 2 Daily Quest Sample", 
+                phase: 2, 
+                notes: "Coming soon...", 
+                completed: false 
+            },
+            { 
+                quest: "Mr. Paradise", 
+                phase: 2, 
+                isBoss: true,
+                notes: "Unlock Status: Phase 2", 
+                completed: false 
+            },
+            { 
+                quest: "Phase 3 Daily Quest Sample", 
+                phase: 3, 
+                notes: "Coming soon...", 
+                completed: false 
+            },
+            { 
+                quest: "Colress", 
+                phase: 3, 
+                isBoss: true,
+                notes: "Unlock Status: Phase 3", 
+                completed: false 
+            }
         ];
 
         summerQuestsData.forEach(q => {
@@ -1527,11 +1576,13 @@
         let activePhases = [1, 2, 3];
         let activeNoteIndex = null;
         let currentMapUrl = "";
+        let currentRewardsUrl = "";
 
         const container = document.getElementById('questsContainer');
         const noteTitle = document.getElementById('noteTitle');
         const noteBody = document.getElementById('noteBody');
         const questMapBtn = document.getElementById('questMapBtn');
+        const questRewardsBtn = document.getElementById('questRewardsBtn');
 
         function switchTab(tab) {
             currentTab = tab;
@@ -1582,15 +1633,19 @@
             mainMapController.reset();
         }
 
-        function togglePhase(phaseNum) {
-            const index = activePhases.indexOf(phaseNum);
+        function togglePhase(phaseKey) {
+            const index = activePhases.indexOf(phaseKey);
             if (index > -1) {
                 activePhases.splice(index, 1);
             } else {
-                activePhases.push(phaseNum);
+                activePhases.push(phaseKey);
             }
 
-            document.getElementById(`phaseBtn${phaseNum}`).classList.toggle('active', activePhases.includes(phaseNum));
+            const btnElem = document.getElementById(`phaseBtn${phaseKey}`);
+            if (btnElem) {
+                btnElem.classList.toggle('active', activePhases.includes(phaseKey));
+            }
+
             renderQuests();
         }
 
@@ -1607,7 +1662,7 @@
             } else {
                 tr.innerHTML = `
                     <th class="status-cell">Status</th>
-                    <th>Phase</th>
+                    <th>Category</th>
                     <th>Quest</th>
                     <th class="notes-btn-cell">Notes</th>
                 `;
@@ -1648,11 +1703,13 @@
                         <td class="notes-btn-cell">${notesBtnHTML}</td>
                     `;
                 } else {
+                    const badgeClass = data.isBoss ? 'phase-badge boss-badge' : 'phase-badge';
+                    const badgeLabel = data.isBoss ? `Phase ${data.phase} (Boss)` : `Phase ${data.phase}`;
                     tr.innerHTML = `
                         <td class="status-cell">
                             <button class="toggle-btn" id="toggle-btn-${index}" onclick="toggleQuest(${index})" aria-label="Toggle quest status"></button>
                         </td>
-                        <td><span class="phase-badge">Phase ${data.phase}</span></td>
+                        <td><span class="${badgeClass}">${badgeLabel}</span></td>
                         <td class="quest-name">${data.quest}</td>
                         <td class="notes-btn-cell">${notesBtnHTML}</td>
                     `;
@@ -1799,6 +1856,14 @@
                     questMapBtn.style.display = "none";
                     currentMapUrl = "";
                 }
+
+                if (data.rewardsUrl) {
+                    questRewardsBtn.style.display = "inline-block";
+                    currentRewardsUrl = data.rewardsUrl;
+                } else {
+                    questRewardsBtn.style.display = "none";
+                    currentRewardsUrl = "";
+                }
             }
         }
 
@@ -1806,18 +1871,27 @@
             noteTitle.innerText = "Select a Quest";
             noteBody.innerHTML = `<span class="notes-placeholder">Click on any 📝 Note button in the list to display specific quest instructions here.</span>`;
             questMapBtn.style.display = "none";
+            questRewardsBtn.style.display = "none";
             currentMapUrl = "";
+            currentRewardsUrl = "";
         }
 
-        function openQuestMapModal() {
-            if (!currentMapUrl) return;
+        function openQuestImageModal(type) {
             const modal = document.getElementById('questMapModal');
             const modalImg = document.getElementById('modalMapImage');
             const modalTitle = document.getElementById('modalMapTitle');
-            
             const dataList = getCurrentData();
-            modalTitle.innerText = dataList[activeNoteIndex].quest + " Map";
-            modalImg.src = currentMapUrl;
+
+            if (type === 'map' && currentMapUrl) {
+                modalTitle.innerText = dataList[activeNoteIndex].quest + " Map";
+                modalImg.src = currentMapUrl;
+            } else if (type === 'rewards' && currentRewardsUrl) {
+                modalTitle.innerText = dataList[activeNoteIndex].quest + " Rewards";
+                modalImg.src = currentRewardsUrl;
+            } else {
+                return;
+            }
+
             modalMapController.reset();
             modal.classList.add('open');
         }
@@ -1837,7 +1911,6 @@
             document.getElementById('remainingQuests').innerText = remaining;
         }
 
-        /* --- RESET ALL QUESTS FUNCTION --- */
         function resetAllQuests() {
             if (confirm("Reset all daily quest progression?")) {
                 unovaQuestsData.forEach(q => q.completed = false);
