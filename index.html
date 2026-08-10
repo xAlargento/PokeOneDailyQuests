@@ -1115,14 +1115,16 @@
         <button class="tab-btn active" id="tabUnova" onclick="switchTab('unova')">Unova</button>
         <button class="tab-btn" id="tabUnovaOptimized" style="display: none;" onclick="switchTab('unovaOptimized')">Unova Optimized</button>
         <button class="tab-btn" id="tabSummer" onclick="switchTab('summer')">Summer Event</button>
+        <button class="tab-btn" id="tabSummerOptimized" style="display: none;" onclick="switchTab('summerOptimized')">Summer Event Optimized</button>
     </div>
 
     <!-- Tracker Grid Container -->
     <div class="tracker-grid">
         <!-- Left: Daily Quests Section -->
         <section class="quests-section" id="questsSection">
-            <!-- Pulsante linguetta sporgenti attaccati alla colonna - uno dedicato per ciascuna Tab -->
+            <!-- Pulsante linguetta sporgente attaccato alla colonna -->
             <button class="optimize-route-tab" id="btnOptimizeRouteUnova" onclick="optimizeRouteUnova()">OPTIMIZE ROUTE</button>
+            <button class="optimize-route-tab" id="btnOptimizeRouteSummer" style="display: none;" onclick="optimizeRouteSummer()">OPTIMIZE ROUTE</button>
 
             <div class="section-header" style="margin-bottom: 5px;">
                 <div class="section-title-group">
@@ -1223,6 +1225,11 @@
     </div>
 
     <script>
+        /* --- CONSTANTS FOR MAP URLS --- */
+        const MAP_BAYWATCH = "https://pokeonecommunity.com/wp-content/uploads/2024/06/map.png";
+        const MAP_KRABBY = "https://pokeonecommunity.com/wp-content/uploads/2024/07/Krabby-map-1024x871.png";
+        const MAP_AGATHA = "https://pokeonecommunity.com/wp-content/uploads/2024/07/page-map-1024x996.png";
+
         /* --- INITIALIZE AUDIO VOLUMES --- */
         window.addEventListener('DOMContentLoaded', () => {
             const scizorAudio = document.getElementById('scizorAudio');
@@ -1572,25 +1579,27 @@
         ];
 
         /* --- SUMMER EVENT QUESTS DATA --- */
+        const camperNotesText = "In this quest, there are 6 campers that you will have to defeat daily. It does not matter which way you start, but each battle will add more Pokémon as you progress. The first battle will start with 1, and the last battle will end with a full team of 6. After you have beaten all 6 campers, Camp Owner Otto will give you your sun coin for the day.";
+
         const summerQuestsData = [
             { 
                 quest: "Campers Quest", 
                 phase: 1, 
-                notes: "In this quest, there are 6 campers that you will have to defeat daily. It does not matter which way you start, but each battle will add more Pokémon as you progress. The first battle will start with 1, and the last battle will end with a full team of 6. After you have beaten all 6 campers, Camp Owner Otto will give you your sun coin for the day.", 
+                notes: camperNotesText, 
                 completed: false 
             },
             { 
                 quest: "Swimmers in Danger (Baywatch)", 
                 phase: 1, 
                 notes: "Everyday, there are 3 swimmers who are being attacked by wild Pokémon. This is your chance to be a lifeguard and help these poor swimmers. They can be found on the maps in the event with water: <span class=\"note-location\">\"Paradise bay\"</span>, <span class=\"note-location\">\"Paradise sport\"</span>, <span class=\"note-location\">\"cliffside waters\"</span>, and <span class=\"note-location\">\"fallen fields\"</span>. These swimmers will be in different spots everyday.", 
-                mapUrl: "https://pokeonecommunity.com/wp-content/uploads/2024/06/map.png",
+                mapUrl: MAP_BAYWATCH,
                 completed: false 
             },
             { 
                 quest: "Agatha’s Page", 
                 phase: 1, 
                 notes: "Agatha is writing a book and the wind carries one of her pages away every day. It is your job to find the missing page and return it to Agatha. She can be found on the beach of <span class=\"note-location\">\"Paradise Bay\"</span>. The page can be found on the beaches of many of the maps at the event. This quest will give 1 sun coin per day.\n\nopen the map for the pages location", 
-                mapUrl: "https://pokeonecommunity.com/wp-content/uploads/2024/07/page-map-1024x996.png",
+                mapUrl: MAP_AGATHA,
                 completed: false 
             },
             { 
@@ -1605,12 +1614,14 @@
                 notes: "Once you have completed the new Capt. Jeck Spearow quest, you will be able to battle his crew daily. Additionally, the Singing Sailors can be fought daily after unlocking access to the “Pelipper’s Grace”.", 
                 mapUrl: "https://i.imgur.com/zppI8Nk.png",
                 subItems: [
-                    "Swabby Silas & Corsair Conrad at Pier Paradise",
+                    "Corsair Conrad at Pier Paradise",
+                    "Swabby Silas at Paradise Bay",
                     "Bucaneer Brandon at Paradise Sport",
                     "Sea Dog Dan at Adventure Island East",
                     "Cutlass Cassia at Shadow Haven",
                     "Fogwatch Phil at Cliffside Waters",
-                    "Scorchblade Sally & Plunder Paul at Fallen Fields",
+                    "Scorchblade Sally at Fallen Fields",
+                    "Plunder Paul at Fallen Fields",
                     "Singing Sailors on Pelipper's Grace"
                 ],
                 subState: {},
@@ -1741,7 +1752,7 @@
                 phase: 1, 
                 isBoss: true,
                 notes: "After finding all the beach balls, an NPC named Beachbum Riku will appear in <span class=\"note-location\">\"Paradise Bay\"</span>. He will ask you to find his missing Krabbys. There are 5 missing Krabbys on the beaches of the Summer event. After you find all the Krabby, Mr. Krabbs will appear between <span class=\"note-location\">\"Pier Paradise\"</span> and <span class=\"note-location\">\"Paradise Sport\"</span> as a daily boss!", 
-                mapUrl: "https://pokeonecommunity.com/wp-content/uploads/2024/07/Krabby-map-1024x871.png",
+                mapUrl: MAP_KRABBY,
                 rewardsUrl: "https://i.imgur.com/eLHCTem.png",
                 completed: false 
             },
@@ -1779,6 +1790,79 @@
                 notes: "Unlock Status: Phase 3", 
                 completed: false 
             }
+        ];
+
+        /* --- SUMMER EVENT OPTIMIZED DATA --- */
+        const summerOptimizedData = [
+            { location: "Pier Paradise", quest: "Campers", parentQuest: "Campers Quest", notes: camperNotesText, completed: false },
+            { location: "Pier Paradise", quest: "Waiterss Lu", parentQuest: "Pier Paradise", subName: "Waiterss Lu - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Pier Paradise", quest: "Chef Gordon", parentQuest: "Pier Paradise", subName: "Chef Gordon - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Pier Paradise", quest: "Guitarist Kurt", parentQuest: "Pier Paradise", subName: "Guitarist Kurt - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Pier Paradise", quest: "Corsair Conrad (Jeck's Crew)", parentQuest: "Capt. Jeck’s Crew & Singing Sailors", subName: "Corsair Conrad at Pier Paradise", notes: "Member of Capt. Jeck's Crew", completed: false },
+            { location: "Pier Paradise", quest: "Check Agatha's Page", parentQuest: "Agatha’s Page", mapUrl: MAP_AGATHA, notes: "Check for missing Agatha's page", completed: false },
+            { location: "Paradise Resort", quest: "Boss Jeck", parentQuest: "Jeck Spearow", notes: "Boss battle on Pelipper's Grace", completed: false },
+            { location: "Paradise Resort", quest: "Singing Sailors", parentQuest: "Capt. Jeck’s Crew & Singing Sailors", subName: "Singing Sailors on Pelipper's Grace", notes: "Fought daily after unlocking access to Pelipper's Grace", completed: false },
+            { location: "Paradise Resort", quest: "Check Agatha's Page", parentQuest: "Agatha’s Page", mapUrl: MAP_AGATHA, notes: "Check for missing Agatha's page", completed: false },
+            { location: "Paradise Bay", quest: "Slick (Wild Pokemons)", parentQuest: "Phase One: Daily Trainers", subName: "Slick at Paradise Bay", notes: "Daily Trainer", completed: false },
+            { location: "Paradise Bay", quest: "King Zayed", parentQuest: "Paradise Bay", subName: "King Zayed - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Paradise Bay", quest: "Veteran Gru", parentQuest: "Paradise Bay", subName: "Veteran Gru - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Paradise Bay", quest: "Swabby Silas (Jeck's Crew)", parentQuest: "Capt. Jeck’s Crew & Singing Sailors", subName: "Swabby Silas at Paradise Bay", notes: "Member of Capt. Jeck's Crew", completed: false },
+            { location: "Paradise Bay", quest: "Sailor Jorgen", parentQuest: "Paradise Bay", subName: "Sailor Jorgen - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Paradise Bay", quest: "Biker Rob", parentQuest: "Paradise Bay", subName: "Biker Rob - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Paradise Bay", quest: "Swimmer Cindy", parentQuest: "Paradise Bay", subName: "Swimmer Cindy - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Paradise Bay", quest: "Ace Trainer Junes", parentQuest: "Paradise Bay", subName: "Ace Trainer Junes - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Paradise Bay", quest: "Take the Krabby Quest", parentQuest: "Mr Krabbs", mapUrl: MAP_KRABBY, notes: "Talk to Beachbum Riku after finding all beach balls", completed: false },
+            { location: "Paradise Bay", quest: "Check for swimmer in danger", parentQuest: "Swimmers in Danger (Baywatch)", mapUrl: MAP_BAYWATCH, notes: "Check water for endangered swimmer", completed: false },
+            { location: "Paradise Bay", quest: "Check Agatha's Page", parentQuest: "Agatha’s Page", mapUrl: MAP_AGATHA, notes: "Check beach for missing page", completed: false },
+            { location: "Paradise Bay", quest: "Krabby", parentQuest: "Mr Krabbs", mapUrl: MAP_KRABBY, notes: "Check for missing Krabby", completed: false },
+            { location: "Paradise Sport", quest: "Dwayne (Wild Pokemons)", parentQuest: "Phase One: Daily Trainers", subName: "Dwayne at Paradise Sport", notes: "Daily Trainer", completed: false },
+            { location: "Paradise Sport", quest: "Swimmer Anna", parentQuest: "Paradise Sport", subName: "Swimmer Anna - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Paradise Sport", quest: "Swimmer Yaaas", parentQuest: "Paradise Sport", subName: "Swimmer Yaaas - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Paradise Sport", quest: "Swimmer Henry", parentQuest: "Paradise Sport", subName: "Swimmer Henry - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Paradise Sport", quest: "Bucaneer Brandon (Jeck's Crew)", parentQuest: "Capt. Jeck’s Crew & Singing Sailors", subName: "Bucaneer Brandon at Paradise Sport", notes: "Member of Capt. Jeck's Crew", completed: false },
+            { location: "Paradise Sport", quest: "Check for swimmer in danger", parentQuest: "Swimmers in Danger (Baywatch)", mapUrl: MAP_BAYWATCH, notes: "Check water for endangered swimmer", completed: false },
+            { location: "Paradise Sport", quest: "Check Agatha's Page", parentQuest: "Agatha’s Page", mapUrl: MAP_AGATHA, notes: "Check beach for missing page", completed: false },
+            { location: "Paradise Sport", quest: "Krabby", parentQuest: "Mr Krabbs", mapUrl: MAP_KRABBY, notes: "Check for missing Krabby", completed: false },
+            { location: "Paradise Sport", quest: "Boss Krabby", parentQuest: "Mr Krabbs", mapUrl: MAP_KRABBY, notes: "Daily Boss Mr Krabbs", completed: false },
+            { location: "Adventure Island", quest: "Ron (Wild Pokemons)", parentQuest: "Phase One: Daily Trainers", subName: "Ron at Adventure Island", notes: "Daily Trainer", completed: false },
+            { location: "Adventure Island", quest: "Sea Dog Dan (Jeck's Crew)", parentQuest: "Capt. Jeck’s Crew & Singing Sailors", subName: "Sea Dog Dan at Adventure Island East", notes: "Member of Capt. Jeck's Crew", completed: false },
+            { location: "Adventure Island", quest: "Krabby", parentQuest: "Mr Krabbs", mapUrl: MAP_KRABBY, notes: "Check for missing Krabby", completed: false },
+            { location: "Shadow Haven", quest: "Swimmer Fathi", parentQuest: "Shadow Haven", subName: "Swimmer Fathi - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Shadow Haven", quest: "Swimmer Lisa", parentQuest: "Shadow Haven", subName: "Swimmer Lisa - $2000 | 30 EXP", notes: "$2000 | 30 EXP", completed: false },
+            { location: "Shadow Haven", quest: "Cutlass Cassia (Jeck's Crew)", parentQuest: "Capt. Jeck’s Crew & Singing Sailors", subName: "Cutlass Cassia at Shadow Haven", notes: "Member of Capt. Jeck's Crew", completed: false },
+            { location: "Shadow Haven", quest: "Check for swimmer in danger", parentQuest: "Swimmers in Danger (Baywatch)", mapUrl: MAP_BAYWATCH, notes: "Check water for endangered swimmer", completed: false },
+            { location: "Shadow Haven", quest: "Check Agatha's Page", parentQuest: "Agatha’s Page", mapUrl: MAP_AGATHA, notes: "Check beach for missing page", completed: false },
+            { location: "Shadow Haven", quest: "Krabby", parentQuest: "Mr Krabbs", mapUrl: MAP_KRABBY, notes: "Check for missing Krabby", completed: false },
+            { location: "Summer Cave South", quest: "Ted (Wild Pokemons)", parentQuest: "Phase One: Daily Trainers", subName: "Ted at Summer Cave South", notes: "Daily Trainer", completed: false },
+            { location: "Summer Cave South", quest: "Hiker Bernd", parentQuest: "Summer Cave South", subName: "Hiker Bernd - $2000 | 20 EXP", notes: "$2000 | 20 EXP", completed: false },
+            { location: "Summer Cave South", quest: "Hiker Dan", parentQuest: "Summer Cave South", subName: "Hiker Dan - $2000 | 20 EXP", notes: "$2000 | 20 EXP", completed: false },
+            { location: "Summer Cave South", quest: "Hiker Gerald", parentQuest: "Summer Cave South", subName: "Hiker Gerald - $2000 | 20 EXP", notes: "$2000 | 20 EXP", completed: false },
+            { location: "Cliffside Waters", quest: "Pam (Wild Pokemons)", parentQuest: "Phase One: Daily Trainers", subName: "Pam at Cliffside Waters", notes: "Daily Trainer", completed: false },
+            { location: "Cliffside Waters", quest: "Swimmer Michael", parentQuest: "Cliffside Waters", subName: "Swimmer Michael - $3000 | 30 EXP", notes: "$3000 | 30 EXP", completed: false },
+            { location: "Cliffside Waters", quest: "Swimmer Nikita", parentQuest: "Cliffside Waters", subName: "Swimmer Nikita - $3000 | 30 EXP", notes: "$3000 | 30 EXP", completed: false },
+            { location: "Cliffside Waters", quest: "Swimmer Pavel", parentQuest: "Cliffside Waters", subName: "Swimmer Pavel - $3000 | 30 EXP", notes: "$3000 | 30 EXP", completed: false },
+            { location: "Cliffside Waters", quest: "Swimmer Janik", parentQuest: "Cliffside Waters", subName: "Swimmer Janik - $3000 | 30 EXP", notes: "$3000 | 30 EXP", completed: false },
+            { location: "Cliffside Waters", quest: "Swimmer Umut", parentQuest: "Cliffside Waters", subName: "Swimmer Umut - $3000 | 30 EXP", notes: "$3000 | 30 EXP", completed: false },
+            { location: "Cliffside Waters", quest: "Fogwatch Phil (Jeck's Crew)", parentQuest: "Capt. Jeck’s Crew & Singing Sailors", subName: "Fogwatch Phil at Cliffside Waters", notes: "Member of Capt. Jeck's Crew", completed: false },
+            { location: "Cliffside Waters", quest: "Check for swimmer in danger", parentQuest: "Swimmers in Danger (Baywatch)", mapUrl: MAP_BAYWATCH, notes: "Check water for endangered swimmer", completed: false },
+            { location: "Cliffside Waters", quest: "Check Agatha's Page", parentQuest: "Agatha’s Page", mapUrl: MAP_AGATHA, notes: "Check beach for missing page", completed: false },
+            { location: "Fallen Fields", quest: "Serena (Wild Pokemons)", parentQuest: "Phase One: Daily Trainers", subName: "Serena at Fallen Fields", notes: "Daily Trainer", completed: false },
+            { location: "Fallen Fields", quest: "Treasure Hunt", parentQuest: "Fallen Fields Treasure Hunt", notes: "Daily treasure hunt at the statue", completed: false },
+            { location: "Fallen Fields", quest: "Swimmer Jules", parentQuest: "Fallen Fields", subName: "Swimmer Jules - $3000 | 30 EXP", notes: "$3000 | 30 EXP", completed: false },
+            { location: "Fallen Fields", quest: "Swimmer Mikan", parentQuest: "Fallen Fields", subName: "Swimmer Mikan - $3000 | 30 EXP", notes: "$3000 | 30 EXP", completed: false },
+            { location: "Fallen Fields", quest: "Swimmer Nina", parentQuest: "Fallen Fields", subName: "Swimmer Nina - $3000 | 30 EXP", notes: "$3000 | 30 EXP", completed: false },
+            { location: "Fallen Fields", quest: "Swimmer Roloc", parentQuest: "Fallen Fields", subName: "Swimmer Roloc - $3000 | 30 EXP", notes: "$3000 | 30 EXP", completed: false },
+            { location: "Fallen Fields", quest: "Swimmer Christian", parentQuest: "Fallen Fields", subName: "Swimmer Christian - $3000 | 30 EXP", notes: "$3000 | 30 EXP", completed: false },
+            { location: "Fallen Fields", quest: "Scorchblade Sally (Jeck's Crew)", parentQuest: "Capt. Jeck’s Crew & Singing Sailors", subName: "Scorchblade Sally at Fallen Fields", notes: "Member of Capt. Jeck's Crew", completed: false },
+            { location: "Fallen Fields", quest: "Plunder Paul (Jeck's Crew)", parentQuest: "Capt. Jeck’s Crew & Singing Sailors", subName: "Plunder Paul at Fallen Fields", notes: "Member of Capt. Jeck's Crew", completed: false },
+            { location: "Fallen Fields", quest: "Check for swimmer in danger", parentQuest: "Swimmers in Danger (Baywatch)", mapUrl: MAP_BAYWATCH, notes: "Check water for endangered swimmer", completed: false },
+            { location: "Fallen Fields", quest: "Check Agatha's Page", parentQuest: "Agatha’s Page", mapUrl: MAP_AGATHA, notes: "Check beach for missing page", completed: false },
+            { location: "Fallen Fields", quest: "Krabby", parentQuest: "Mr Krabbs", mapUrl: MAP_KRABBY, notes: "Check for missing Krabby", completed: false },
+            { location: "Forsaken Ruins", quest: "Charlotte (Wild Pokemons)", parentQuest: "Phase One: Daily Trainers", subName: "Charlotte at Forsaken Ruins", notes: "Daily Trainer", completed: false },
+            { location: "Forsaken Ruins", quest: "Diver Daniel", parentQuest: "Forsaken Ruins", subName: "Diver Daniel - $3000 | 30 EXP", notes: "$3000 | 30 EXP", completed: false },
+            { location: "Forsaken Ruins", quest: "Diver Henry", parentQuest: "Forsaken Ruins", subName: "Diver Henry - $4000 | 20 EXP", notes: "$4000 | 20 EXP", completed: false },
+            { location: "Forsaken Ruins", quest: "Driver Marc", parentQuest: "Forsaken Ruins", subName: "Diver Marc - $3000 | 20 EXP", notes: "$3000 | 20 EXP", completed: false },
+            { location: "Forsaken Ruins", quest: "Boss Wailord", parentQuest: "Wailord", notes: "Daily Boss Wailord in Forsaken Ruins", completed: false }
         ];
 
         summerQuestsData.forEach(q => {
@@ -1822,12 +1906,18 @@
             resetNotesPanel();
 
             document.getElementById('tabUnova').classList.toggle('active', tab === 'unova');
-            const optTab = document.getElementById('tabUnovaOptimized');
-            if (optTab) optTab.classList.toggle('active', tab === 'unovaOptimized');
+            const optUnovaTab = document.getElementById('tabUnovaOptimized');
+            if (optUnovaTab) optUnovaTab.classList.toggle('active', tab === 'unovaOptimized');
+            
             document.getElementById('tabSummer').classList.toggle('active', tab === 'summer');
+            const optSummerTab = document.getElementById('tabSummerOptimized');
+            if (optSummerTab) optSummerTab.classList.toggle('active', tab === 'summerOptimized');
 
             const btnUnova = document.getElementById('btnOptimizeRouteUnova');
             if (btnUnova) btnUnova.style.display = (tab === 'unova') ? 'block' : 'none';
+
+            const btnSummer = document.getElementById('btnOptimizeRouteSummer');
+            if (btnSummer) btnSummer.style.display = (tab === 'summer') ? 'block' : 'none';
 
             const titleElem = document.getElementById('currentTabTitle');
             const tabDescHint = document.getElementById('tabDescriptionHint');
@@ -1846,9 +1936,11 @@
                 if (mapSectionTitle) mapSectionTitle.innerText = "Unova Map";
                 if (mapImage) mapImage.src = "https://i.imgur.com/WZNFxES.jpeg";
             } else {
-                titleElem.innerText = "Summer Event";
-                if (tabDescHint) tabDescHint.style.display = "none";
-                phaseFilters.style.display = "flex";
+                titleElem.innerText = (tab === 'summerOptimized') ? "Summer Event Optimized" : "Summer Event";
+                if (tabDescHint) {
+                    tabDescHint.style.display = (tab === 'summerOptimized') ? "block" : "none";
+                }
+                phaseFilters.style.display = (tab === 'summer') ? "flex" : "none";
                 summerMapSelector.style.display = "flex";
                 if (mapSectionTitle) mapSectionTitle.innerText = "Summer Event Map";
                 if (mapImage) mapImage.src = summerMaps[activeSummerMapKey];
@@ -1865,6 +1957,14 @@
                 optTabBtn.style.display = 'block';
             }
             switchTab('unovaOptimized');
+        }
+
+        function optimizeRouteSummer() {
+            const optTabBtn = document.getElementById('tabSummerOptimized');
+            if (optTabBtn) {
+                optTabBtn.style.display = 'block';
+            }
+            switchTab('summerOptimized');
         }
 
         function switchSummerMap(mapKey) {
@@ -1915,7 +2015,7 @@
                     <th>XP</th>
                     <th class="notes-btn-cell">Notes</th>
                 `;
-            } else if (currentTab === 'unovaOptimized') {
+            } else if (currentTab === 'unovaOptimized' || currentTab === 'summerOptimized') {
                 tr.innerHTML = `
                     <th class="status-cell">Status</th>
                     <th>Location</th>
@@ -1937,6 +2037,8 @@
                 return unovaQuestsData;
             } else if (currentTab === 'unovaOptimized') {
                 return unovaOptimizedData;
+            } else if (currentTab === 'summerOptimized') {
+                return summerOptimizedData;
             } else {
                 return summerQuestsData.filter(q => activePhases.includes(q.phase));
             }
@@ -1951,7 +2053,7 @@
                 tr.className = `quest-main-row ${data.completed ? 'completed' : ''}`;
                 tr.id = `quest-row-${index}`;
                 
-                const hasNotes = Boolean(data.notes || data.isBookshelves || data.isOfficerJennyMaster || data.subItems || data.mapsList);
+                const hasNotes = Boolean(data.notes || data.isBookshelves || data.isOfficerJennyMaster || data.subItems || data.mapsList || data.mapUrl);
                 const notesBtnHTML = hasNotes 
                     ? `<button class="notes-btn ${activeNoteIndex === index ? 'active' : ''}" id="notes-btn-${index}" onclick="openNotes(${index})">📝 Note</button>` 
                     : `<span style="color: var(--border-color);">-</span>`;
@@ -1972,7 +2074,7 @@
                         <td class="quest-xp">${xpText}</td>
                         <td class="notes-btn-cell">${notesBtnHTML}</td>
                     `;
-                } else if (currentTab === 'unovaOptimized') {
+                } else if (currentTab === 'unovaOptimized' || currentTab === 'summerOptimized') {
                     tr.innerHTML = `
                         <td class="status-cell">
                             <button class="toggle-btn" id="toggle-btn-${index}" onclick="toggleQuest(${index})" aria-label="Toggle quest status"></button>
@@ -1998,6 +2100,32 @@
             });
 
             updateCounters();
+        }
+
+        function syncSummerQuests(sourceTab, questItem) {
+            if (sourceTab === 'summerOptimized') {
+                const parent = summerQuestsData.find(q => q.quest === questItem.parentQuest || q.quest === questItem.quest);
+                if (parent) {
+                    if (questItem.subName && parent.subState) {
+                        parent.subState[questItem.subName] = questItem.completed;
+                        if (parent.subItems) {
+                            parent.completed = parent.subItems.every(item => parent.subState[item]);
+                        }
+                    } else if (!parent.subItems) {
+                        parent.completed = questItem.completed;
+                    }
+                }
+            } else if (sourceTab === 'summer') {
+                summerOptimizedData.forEach(optQ => {
+                    if (optQ.parentQuest === questItem.quest || optQ.quest === questItem.quest) {
+                        if (optQ.subName && questItem.subState) {
+                            optQ.completed = Boolean(questItem.subState[optQ.subName]);
+                        } else if (!questItem.subItems) {
+                            optQ.completed = questItem.completed;
+                        }
+                    }
+                });
+            }
         }
 
         function toggleQuest(index) {
@@ -2029,14 +2157,12 @@
                         unovaQuestsData.forEach(q => { if (q.isBookshelves) q.completed = allCitiesChecked; });
                     }
                 } else if (questItem.isOfficerJennyMaster) {
-                    // Cliccato il pulsante status master per Officer Jenny in Unova
                     unovaOptimizedData.forEach(q => {
                         if (q.isOfficerJennySingle) {
                             q.completed = questItem.completed;
                         }
                     });
                 } else if (questItem.isOfficerJennySingle) {
-                    // Cliccato il pulsante status di una singola Officer Jenny
                     const allJennyChecked = unovaOptimizedData
                         .filter(q => q.isOfficerJennySingle)
                         .every(q => q.completed);
@@ -2051,6 +2177,8 @@
                     unovaQuestsData.forEach(q => { if (q.quest === targetName) q.completed = questItem.completed; });
                     unovaOptimizedData.forEach(q => { if (q.quest === targetName) q.completed = questItem.completed; });
                 }
+            } else if (currentTab === 'summer' || currentTab === 'summerOptimized') {
+                syncSummerQuests(currentTab, questItem);
             }
 
             const row = document.getElementById(`quest-row-${index}`);
@@ -2074,6 +2202,9 @@
                 questItem.subItems.forEach(item => {
                     questItem.subState[item] = questItem.completed;
                 });
+                if (currentTab === 'summer') {
+                    syncSummerQuests('summer', questItem);
+                }
                 if (activeNoteIndex === index) {
                     renderSubChecklistNotes(questItem, index);
                 }
@@ -2139,7 +2270,63 @@
 
             const allCompleted = questItem.subItems.every(i => questItem.subState[i]);
             questItem.completed = allCompleted;
+
+            if (currentTab === 'summer') {
+                syncSummerQuests('summer', questItem);
+            }
+
             renderQuests();
+        }
+
+        function resetNotesPanel() {
+            noteTitle.innerText = "Select a Quest";
+            noteBody.innerHTML = '<span class="notes-placeholder">Click on any 📝 Note button in the list to display specific quest instructions here.</span>';
+            questMapBtn.style.display = 'none';
+            questRewardsBtn.style.display = 'none';
+            currentMapUrl = "";
+            currentRewardsUrl = "";
+        }
+
+        function openNotes(index) {
+            const dataList = getCurrentData();
+            const data = dataList[index];
+
+            if (activeNoteIndex === index) {
+                activeNoteIndex = null;
+                resetNotesPanel();
+                renderQuests();
+                return;
+            }
+
+            activeNoteIndex = index;
+            renderQuests();
+
+            noteTitle.innerText = data.quest;
+
+            currentMapUrl = data.mapUrl || "";
+            currentRewardsUrl = data.rewardsUrl || "";
+
+            questMapBtn.style.display = currentMapUrl ? 'inline-block' : 'none';
+            questRewardsBtn.style.display = currentRewardsUrl ? 'inline-block' : 'none';
+
+            if (data.isBookshelves) {
+                renderBookshelvesNotes(data);
+            } else if (data.isOfficerJennyMaster) {
+                renderOfficerJennyNotes(data);
+            } else if (data.subItems) {
+                renderSubChecklistNotes(data, index);
+            } else if (data.mapsList) {
+                let html = `<div>${data.notes}</div>`;
+                html += `<div style="margin-top: 15px; font-weight: 700; color: var(--accent-yellow);">Interactive Maps:</div>`;
+                html += `<div style="display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">`;
+                data.mapsList.forEach(m => {
+                    html += `<button class="notes-action-btn" style="text-align: left;" onclick="openSpecificMap('${m.url}', '${m.title}')">🗺️ ${m.title}</button>`;
+                });
+                html += `</div>`;
+                noteBody.innerHTML = html;
+            } else {
+                noteBody.innerHTML = data.notes || "No additional instructions provided for this quest.";
+            }
         }
 
         function renderBookshelvesNotes(data) {
@@ -2147,9 +2334,9 @@
             html += `<div class="sub-checklist">`;
             bookshelvesCities.forEach(city => {
                 const isChecked = bookshelvesState[city];
-                const safeCityId = city.replace(/\s+/g, '-');
+                const safeCity = city.replace(/\s+/g, '-');
                 html += `
-                    <div class="sub-checklist-item ${isChecked ? 'completed' : ''}" id="city-item-${safeCityId}" onclick="toggleCity('${city}')">
+                    <div class="sub-checklist-item ${isChecked ? 'completed' : ''}" id="city-item-${safeCity}" onclick="toggleCity('${city}')">
                         <div class="mini-toggle-btn"></div>
                         <span>${city}</span>
                     </div>
@@ -2160,57 +2347,31 @@
         }
 
         function renderOfficerJennyNotes(data) {
-            const paragraphs = [
-                {
-                    title: "Recommended Route U3",
-                    body: "• Fish Pokemon In Striaton City - 120 XP\n• Defeat Pokemon on Route U3 - 165 XP\n• Defeat Pidove on Route U3 - 150 XP\n• Defeat Wild Pokemon on Route U3 - 180 XP",
-                    key: "Officer Jenny U3"
-                },
-                {
-                    title: "Recommended Route U11",
-                    body: "• Challenge Talon, Samplada, and Corin on Route U11 - 99 XP",
-                    key: "Officer Jenny U11"
-                },
-                {
-                    title: "Recommended Lacunosa Town",
-                    body: "• Defeat Pokemon on the Island (Route U13) - 40-80 XP\n• Defeat Pokemon on the Island - 40-80 XP\n• Defeat Golbat and Tangela - 50-100 XP\n• Defeat Pokemon on Route U12 - 45-75 XP\n• Defeat Pokemon on Route U13 - 40-80 XP",
-                    key: "Officer Jenny Lacunosa Town"
-                },
-                {
-                    title: "Recommended Icirrus City",
-                    body: "• Defeat Palpitoad on Route U8 - 84 XP\n• Defeat Pokemon south of Iccirus City - 84 XP",
-                    key: "Officer Jenny Icirrus City"
-                }
-            ];
-
-            let html = '';
-            paragraphs.forEach(p => {
-                const targetQuest = unovaOptimizedData.find(q => q.jennyKey === p.key);
+            let html = `<div>${data.notes}</div>`;
+            html += `<div class="sub-checklist" style="margin-top: 15px;">`;
+            officerJennyQuests.forEach(jennyKey => {
+                const targetQuest = unovaOptimizedData.find(q => q.jennyKey === jennyKey);
                 const isChecked = targetQuest ? targetQuest.completed : false;
-                const safeJennyId = p.key.replace(/\s+/g, '-');
-
-                html += `<div style="margin-bottom: 15px;">`;
-                html += `<strong>${p.title}</strong>\n${p.body}`;
-                html += `<div class="sub-checklist" style="margin-top: 8px;">
-                            <div class="sub-checklist-item ${isChecked ? 'completed' : ''}" id="jenny-item-${safeJennyId}" onclick="toggleOfficerJennySingle('${p.key}')">
-                                <div class="mini-toggle-btn"></div>
-                                <span>${p.key}</span>
-                            </div>
-                         </div>`;
-                html += `</div>`;
+                const safeKey = jennyKey.replace(/\s+/g, '-');
+                html += `
+                    <div class="sub-checklist-item ${isChecked ? 'completed' : ''}" id="jenny-item-${safeKey}" onclick="toggleOfficerJennySingle('${jennyKey}')">
+                        <div class="mini-toggle-btn"></div>
+                        <span>${jennyKey}</span>
+                    </div>
+                `;
             });
-
+            html += `</div>`;
             noteBody.innerHTML = html;
         }
 
-        function renderSubChecklistNotes(data, index) {
-            let html = data.notes ? `<div>${data.notes}</div>` : '';
+        function renderSubChecklistNotes(data, questIndex) {
+            let html = `<div>${data.notes}</div>`;
             html += `<div class="sub-checklist">`;
             data.subItems.forEach(item => {
-                const isChecked = data.subState[item];
-                const safeItemId = item.replace(/[^a-zA-Z0-9]/g, '-');
+                const isChecked = Boolean(data.subState[item]);
+                const safeItem = item.replace(/[^a-zA-Z0-9]/g, '-');
                 html += `
-                    <div class="sub-checklist-item ${isChecked ? 'completed' : ''}" id="sub-item-${safeItemId}" onclick="toggleSubItem(${index}, '${item.replace(/'/g, "\\'")}')">
+                    <div class="sub-checklist-item ${isChecked ? 'completed' : ''}" id="sub-item-${safeItem}" onclick="toggleSubItem(${questIndex}, '${item.replace(/'/g, "\\'")}')">
                         <div class="mini-toggle-btn"></div>
                         <span>${item}</span>
                     </div>
@@ -2220,110 +2381,40 @@
             noteBody.innerHTML = html;
         }
 
-        function openNotes(index) {
-            if (activeNoteIndex !== null && activeNoteIndex !== index) {
-                const prevBtn = document.getElementById(`notes-btn-${activeNoteIndex}`);
-                if (prevBtn) prevBtn.classList.remove('active');
-            }
-
-            const currentBtn = document.getElementById(`notes-btn-${index}`);
-            const dataList = getCurrentData();
-            const data = dataList[index];
-
-            if (activeNoteIndex === index) {
-                currentBtn.classList.remove('active');
-                activeNoteIndex = null;
-                resetNotesPanel();
-            } else {
-                if (currentBtn) currentBtn.classList.add('active');
-                activeNoteIndex = index;
-                noteTitle.innerText = data.quest;
-
-                if (data.isBookshelves && currentTab === 'unova') {
-                    renderBookshelvesNotes(data);
-                } else if (data.isOfficerJennyMaster && currentTab === 'unova') {
-                    renderOfficerJennyNotes(data);
-                } else if (data.subItems) {
-                    renderSubChecklistNotes(data, index);
-                } else {
-                    noteBody.innerHTML = data.notes || "No additional instructions for this quest.";
-                }
-
-                if (data.mapUrl) {
-                    questMapBtn.style.display = "inline-block";
-                    currentMapUrl = data.mapUrl;
-                } else {
-                    questMapBtn.style.display = "none";
-                    currentMapUrl = "";
-                }
-
-                if (data.rewardsUrl) {
-                    questRewardsBtn.style.display = "inline-block";
-                    currentRewardsUrl = data.rewardsUrl;
-                } else {
-                    questRewardsBtn.style.display = "none";
-                    currentRewardsUrl = "";
-                }
-
-                if (data.mapsList && data.mapsList.length > 0) {
-                    let actionsContainer = document.querySelector('.notes-card-actions');
-                    document.querySelectorAll('.dynamic-map-btn').forEach(btn => btn.remove());
-                    
-                    data.mapsList.forEach((mapObj, mapIdx) => {
-                        const mBtn = document.createElement('button');
-                        mBtn.className = 'notes-action-btn dynamic-map-btn';
-                        mBtn.innerText = `🗺️ ${mapObj.title}`;
-                        mBtn.onclick = () => openSpecificMapModal(mapObj.url, mapObj.title);
-                        actionsContainer.appendChild(mBtn);
-                    });
-                }
-            }
-        }
-
-        function resetNotesPanel() {
-            noteTitle.innerText = "Select a Quest";
-            noteBody.innerHTML = `<span class="notes-placeholder">Click on any 📝 Note button in the list to display specific quest instructions here.</span>`;
-            questMapBtn.style.display = "none";
-            questRewardsBtn.style.display = "none";
-            document.querySelectorAll('.dynamic-map-btn').forEach(btn => btn.remove());
-            currentMapUrl = "";
-            currentRewardsUrl = "";
-        }
-
-        function openSpecificMapModal(url, title) {
-            const modal = document.getElementById('questMapModal');
-            const modalImg = document.getElementById('modalMapImage');
-            const modalTitle = document.getElementById('modalMapTitle');
-
-            modalTitle.innerText = title;
-            modalImg.src = url;
-
-            modalMapController.reset();
-            modal.classList.add('open');
-        }
-
         function openQuestImageModal(type) {
             const modal = document.getElementById('questMapModal');
-            const modalImg = document.getElementById('modalMapImage');
             const modalTitle = document.getElementById('modalMapTitle');
-            const dataList = getCurrentData();
+            const modalImage = document.getElementById('modalMapImage');
 
             if (type === 'map' && currentMapUrl) {
-                modalTitle.innerText = dataList[activeNoteIndex].quest + " Map";
-                modalImg.src = currentMapUrl;
+                modalTitle.innerText = "Quest Map";
+                modalImage.src = currentMapUrl;
             } else if (type === 'rewards' && currentRewardsUrl) {
-                modalTitle.innerText = dataList[activeNoteIndex].quest + " Rewards";
-                modalImg.src = currentRewardsUrl;
+                modalTitle.innerText = "Quest Rewards";
+                modalImage.src = currentRewardsUrl;
             } else {
                 return;
             }
 
-            modalMapController.reset();
             modal.classList.add('open');
+            modalMapController.reset();
+        }
+
+        function openSpecificMap(url, title) {
+            const modal = document.getElementById('questMapModal');
+            const modalTitle = document.getElementById('modalMapTitle');
+            const modalImage = document.getElementById('modalMapImage');
+
+            modalTitle.innerText = title;
+            modalImage.src = url;
+
+            modal.classList.add('open');
+            modalMapController.reset();
         }
 
         function closeQuestMapModal() {
-            document.getElementById('questMapModal').classList.remove('open');
+            const modal = document.getElementById('questMapModal');
+            modal.classList.remove('open');
         }
 
         function updateCounters() {
@@ -2338,23 +2429,24 @@
         }
 
         function resetAllQuests() {
-            if (confirm("Reset all daily quest progression?")) {
-                unovaQuestsData.forEach(q => q.completed = false);
-                unovaOptimizedData.forEach(q => q.completed = false);
-                summerQuestsData.forEach(q => {
-                    q.completed = false;
-                    if (q.subState) {
-                        Object.keys(q.subState).forEach(k => q.subState[k] = false);
-                    }
-                });
-                bookshelvesCities.forEach(city => bookshelvesState[city] = false);
-                
-                renderQuests();
-                resetNotesPanel();
-            }
+            unovaQuestsData.forEach(q => q.completed = false);
+            unovaOptimizedData.forEach(q => q.completed = false);
+            summerQuestsData.forEach(q => {
+                q.completed = false;
+                if (q.subItems) {
+                    q.subItems.forEach(item => q.subState[item] = false);
+                }
+            });
+            summerOptimizedData.forEach(q => q.completed = false);
+
+            bookshelvesCities.forEach(city => bookshelvesState[city] = false);
+
+            activeNoteIndex = null;
+            resetNotesPanel();
+            renderQuests();
         }
 
-        // Initial Load
+        /* --- INITIALIZATION --- */
         renderTableHeader();
         renderQuests();
     </script>
