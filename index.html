@@ -234,6 +234,9 @@
             margin-top: 15px;
             border-top: 2px dashed var(--border-color);
             padding-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .reset-hud-btn {
@@ -259,6 +262,37 @@
         }
 
         .reset-hud-btn:active {
+            transform: translateY(1px);
+        }
+
+        .hide-hud-btn {
+            width: 100%;
+            font-family: 'Press Start 2P', monospace;
+            font-size: 0.75rem;
+            padding: 14px 10px;
+            background-color: var(--pokemon-red);
+            color: #fff;
+            border: 2px solid #ff6688;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 17, 85, 0.4);
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            line-height: 1.4;
+        }
+
+        .hide-hud-btn.active {
+            background-color: var(--pokemon-green);
+            border-color: #4cd964;
+            box-shadow: 0 4px 12px rgba(46, 160, 67, 0.4);
+        }
+
+        .hide-hud-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .hide-hud-btn:active {
             transform: translateY(1px);
         }
 
@@ -1012,8 +1046,9 @@
                 padding-top: 0;
                 padding-left: 16px;
                 margin-top: 0;
+                flex-direction: row;
             }
-            .reset-hud-btn {
+            .reset-hud-btn, .hide-hud-btn {
                 width: auto;
                 padding: 16px 24px;
             }
@@ -1066,8 +1101,11 @@
             <img class="squad-poke" id="bibarelMascot" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/400.png" alt="Bibarel" title="Bibarel - Click to hear cry & run!" onclick="triggerBibarelRun()">
         </div>
 
-        <!-- Single Action Button: Reset Quests -->
+        <!-- Action Buttons Container -->
         <div class="reset-container">
+            <button class="hide-hud-btn" id="btnHideCompleted" onclick="toggleHideCompleted()">
+                👁️ Hide Completed
+            </button>
             <button class="reset-hud-btn" onclick="resetAllQuests()">
                 🔄 Reset Quests
             </button>
@@ -1224,6 +1262,24 @@
     </div>
 
     <script>
+        /* --- GLOBAL STATE FOR HIDING COMPLETED QUESTS --- */
+        let hideCompleted = false;
+
+        function toggleHideCompleted() {
+            hideCompleted = !hideCompleted;
+            const btn = document.getElementById('btnHideCompleted');
+            if (btn) {
+                if (hideCompleted) {
+                    btn.classList.add('active');
+                    btn.innerText = '👁️ Show Completed';
+                } else {
+                    btn.classList.remove('active');
+                    btn.innerText = '👁️ Hide Completed';
+                }
+            }
+            renderQuests();
+        }
+
         /* --- CONSTANTS FOR MAP URLS --- */
         const MAP_BAYWATCH = "https://pokeonecommunity.com/wp-content/uploads/2024/06/map.png";
         const MAP_KRABBY = "https://pokeonecommunity.com/wp-content/uploads/2024/07/Krabby-map-1024x871.png";
@@ -1579,7 +1635,7 @@
             { quest: "Heatran", location: "Nuvema Town", category: "Boss", notes: "Fly Location: Nuvema Town going Left (Surf) - Requirements: Magma Stone- 5 different locations stone can spawn", completed: false }
         ];
 
-        /* --- SUMMER EVENT QUESTS DATA --- */
+        /* --- SUMMER EVENT QUESTS DATA (REORDERED) --- */
         const camperNotesText = "In this quest, there are 6 campers that you will have to defeat daily. It does not matter which way you start, but each battle will add more Pokémon as you progress. The first battle will start with 1, and the last battle will end with a full team of 6. After you have beaten all 6 campers, Camp Owner Otto will give you your sun coin for the day.";
 
         const summerQuestsData = [
@@ -1604,6 +1660,11 @@
             { quest: "Check for swimmer in danger", location: "Paradise Bay", phase: 1, mapUrl: MAP_BAYWATCH, notes: "Check water for endangered swimmer\n\n<button class=\"notes-action-btn\" style=\"margin-top: 10px; background-color: var(--pokemon-green);\" onclick=\"completeAllByName('Check for swimmer in danger')\">Swimmers Found!</button>", completed: false },
             { quest: "Check Agatha's Page", location: "Paradise Bay", phase: 1, mapUrl: MAP_AGATHA, notes: "Check beach for missing page\n\n<button class=\"notes-action-btn\" style=\"margin-top: 10px; background-color: var(--pokemon-green);\" onclick=\"completeAllByName('Check Agatha\\'s Page')\">Page Found!</button>", completed: false },
             { quest: "Krabby", location: "Paradise Bay", phase: 1, mapUrl: MAP_KRABBY, notes: "Check for missing Krabby", completed: false },
+
+            /* ROCKY REEF QUESTS (Phase 3) - Positioned under Paradise Bay */
+            { quest: "Swimmer Mileswalked", location: "Rocky Reef", phase: 3, notes: "Rewards:\n$5000\n50 EXP", completed: false },
+            { quest: "Swimmer Rowena", location: "Rocky Reef", phase: 3, notes: "Rewards:\n$5000\n50 EXP", completed: false },
+
             { quest: "Dwayne (Wild Pokemons)", location: "Paradise Sport", phase: 1, notes: "Daily Trainer", completed: false },
             { quest: "Swimmer Anna", location: "Paradise Sport", phase: 1, notes: "$2000 | 30 EXP", completed: false },
             { quest: "Swimmer Yaaas", location: "Paradise Sport", phase: 1, notes: "$2000 | 30 EXP", completed: false },
@@ -1616,6 +1677,30 @@
             { quest: "Ron (Wild Pokemons)", location: "Adventure Island", phase: 1, notes: "Daily Trainer", completed: false },
             { quest: "Sea Dog Dan (Jeck's Crew)", location: "Adventure Island", phase: 1, notes: "Member of Capt. Jeck's Crew", completed: false },
             { quest: "Krabby", location: "Adventure Island", phase: 1, mapUrl: MAP_KRABBY, notes: "Check for missing Krabby", completed: false },
+
+            /* LIGHTHOUSE & BOSS COLRESS QUESTS (Phase 3) - Positioned under Adventure Island */
+            { quest: "Team Rocket Jojo", location: "Lighthouse", phase: 3, notes: "Rewards: 3 Coins\nMoney: 1500$\nEXP: 150", completed: false },
+            { quest: "Team Rocket Jule", location: "Lighthouse", phase: 3, notes: "Rewards: 3 Coins\nMoney: 1500$\nEXP: 150", completed: false },
+            { quest: "Team Rocket Brad", location: "Lighthouse", phase: 3, notes: "Rewards: 3 Coins\nMoney: 1500$\nEXP: 150", completed: false },
+            { quest: "Team Rocket Mercer", location: "Lighthouse", phase: 3, notes: "Rewards: 3 Coins\nMoney: 1500$\nEXP: 150", completed: false },
+            { quest: "Team Rocket Frazer", location: "Lighthouse", phase: 3, notes: "Rewards: 3 Coins\nMoney: 1500$\nEXP: 150", completed: false },
+            { quest: "Talk To Looker", location: "Lighthouse", phase: 3, notes: "Inside the lighthouse, you will see Team Rocket inside and up to no good. Defeat the 5 team rocket members, and talk to looker at the end. He will give you 3 sun coins per day.", completed: false },
+            { quest: "Plasma Jake", location: "Lighthouse", phase: 3, notes: "Rewards:\n$1916\n56 Exp", completed: false },
+            { quest: "Lady Plasma", location: "Lighthouse", phase: 3, notes: "Rewards:\n$1977\n55 Exp", completed: false },
+            { quest: "Plasma Pia", location: "Lighthouse", phase: 3, notes: "Rewards:\n$1922\n42 Exp", completed: false },
+            { quest: "Plasma Ronya", location: "Lighthouse", phase: 3, notes: "Rewards:\n$2275\n50 Exp", completed: false },
+            { quest: "Plasma Mustache", location: "Lighthouse", phase: 3, notes: "Rewards:\n$2047\n64 Exp", completed: false },
+            { quest: "Plasma Bari", location: "Lighthouse", phase: 3, notes: "Rewards:\n$2239\n47 Exp", completed: false },
+            { 
+                quest: "Boss Colress", 
+                location: "Lighthouse Cavern", 
+                phase: 3, 
+                isBoss: true, 
+                rewardsUrl: "https://i.imgur.com/t8QNyHA.png", 
+                notes: "Colress has 2 different main Pokémon: Mewtwo or Genesect. It will be chosen randomly between these two, plus 5 other Pokémon from his pool. You can choose 3 different difficulties: Beginner, Trainer, and Champion. The rewards scale to be much better on higher difficulties!", 
+                completed: false 
+            },
+
             { quest: "Swimmer Fathi", location: "Shadow Haven", phase: 1, notes: "$2000 | 30 EXP", completed: false },
             { quest: "Swimmer Lisa", location: "Shadow Haven", phase: 1, notes: "$2000 | 30 EXP", completed: false },
             { quest: "Cutlass Cassia (Jeck's Crew)", location: "Shadow Haven", phase: 1, notes: "Member of Capt. Jeck's Crew", completed: false },
@@ -1647,6 +1732,12 @@
             { quest: "Check for swimmer in danger", location: "Fallen Fields", phase: 1, mapUrl: MAP_BAYWATCH, notes: "Check water for endangered swimmer\n\n<button class=\"notes-action-btn\" style=\"margin-top: 10px; background-color: var(--pokemon-green);\" onclick=\"completeAllByName('Check for swimmer in danger')\">Swimmers Found!</button>", completed: false },
             { quest: "Check Agatha's Page", location: "Fallen Fields", phase: 1, mapUrl: MAP_AGATHA, notes: "Check beach for missing page\n\n<button class=\"notes-action-btn\" style=\"margin-top: 10px; background-color: var(--pokemon-green);\" onclick=\"completeAllByName('Check Agatha\\'s Page')\">Page Found!</button>", completed: false },
             { quest: "Krabby", location: "Fallen Fields", phase: 1, mapUrl: MAP_KRABBY, notes: "Check for missing Krabby", completed: false },
+
+            /* DOCILE DUNES QUESTS (Phase 3) - Positioned under Fallen Fields */
+            { quest: "Swimmer Gustav", location: "Docile Dunes", phase: 3, notes: "Rewards:\n$5000\n50 EXP", completed: false },
+            { quest: "Swimmer Axel", location: "Docile Dunes", phase: 3, notes: "Rewards:\n$5000\n50 EXP", completed: false },
+            { quest: "Treasure Hunt", location: "Docile Dunes", phase: 3, notes: "ARG! there be hidden treasure in Docile Dunes. You will find a statue that will give you a quest each day to find the hidden treasure. The statue will tell you what direction to look each day for the treasure. Once you find the hidden spot, you will fight some Pokémon.\nRewards:\nPhase 3: 3 Coins\nMoney: 1800$\nEXP: 90", completed: false },
+
             { quest: "Charlotte (Wild Pokemons)", location: "Forsaken Ruins", phase: 1, notes: "Daily Trainer", completed: false },
             { quest: "Diver Daniel", location: "Forsaken Ruins", phase: 1, notes: "$3000 | 30 EXP", completed: false },
             { quest: "Diver Henry", location: "Forsaken Ruins", phase: 1, notes: "$4000 | 20 EXP", completed: false },
@@ -1697,34 +1788,6 @@
                 isBoss: true, 
                 rewardsUrl: "https://i.imgur.com/3KmMUTU.png", 
                 notes: "You can choose 3 different difficulties: Beginner, Trainer, and Champion. The rewards scale to be much better on higher difficulties!", 
-                completed: false 
-            },
-
-            /* PHASE 3 QUESTS */
-            { quest: "Swimmer Mileswalked", location: "Rocky Reef", phase: 3, notes: "Rewards:\n$5000\n50 EXP", completed: false },
-            { quest: "Swimmer Rowena", location: "Rocky Reef", phase: 3, notes: "Rewards:\n$5000\n50 EXP", completed: false },
-            { quest: "Swimmer Gustav", location: "Docile Dunes", phase: 3, notes: "Rewards:\n$5000\n50 EXP", completed: false },
-            { quest: "Swimmer Axel", location: "Docile Dunes", phase: 3, notes: "Rewards:\n$5000\n50 EXP", completed: false },
-            { quest: "Treasure Hunt", location: "Docile Dunes", phase: 3, notes: "ARG! there be hidden treasure in Docile Dunes. You will find a statue that will give you a quest each day to find the hidden treasure. The statue will tell you what direction to look each day for the treasure. Once you find the hidden spot, you will fight some Pokémon.\nRewards:\nPhase 3: 3 Coins\nMoney: 1800$\nEXP: 90", completed: false },
-            { quest: "Team Rocket Jojo", location: "Lighthouse", phase: 3, notes: "Rewards: 3 Coins\nMoney: 1500$\nEXP: 150", completed: false },
-            { quest: "Team Rocket Jule", location: "Lighthouse", phase: 3, notes: "Rewards: 3 Coins\nMoney: 1500$\nEXP: 150", completed: false },
-            { quest: "Team Rocket Brad", location: "Lighthouse", phase: 3, notes: "Rewards: 3 Coins\nMoney: 1500$\nEXP: 150", completed: false },
-            { quest: "Team Rocket Mercer", location: "Lighthouse", phase: 3, notes: "Rewards: 3 Coins\nMoney: 1500$\nEXP: 150", completed: false },
-            { quest: "Team Rocket Frazer", location: "Lighthouse", phase: 3, notes: "Rewards: 3 Coins\nMoney: 1500$\nEXP: 150", completed: false },
-            { quest: "Talk To Looker", location: "Lighthouse", phase: 3, notes: "Inside the lighthouse, you will see Team Rocket inside and up to no good. Defeat the 5 team rocket members, and talk to looker at the end. He will give you 3 sun coins per day.", completed: false },
-            { quest: "Plasma Jake", location: "Lighthouse", phase: 3, notes: "Rewards:\n$1916\n56 Exp", completed: false },
-            { quest: "Lady Plasma", location: "Lighthouse", phase: 3, notes: "Rewards:\n$1977\n55 Exp", completed: false },
-            { quest: "Plasma Pia", location: "Lighthouse", phase: 3, notes: "Rewards:\n$1922\n42 Exp", completed: false },
-            { quest: "Plasma Ronya", location: "Lighthouse", phase: 3, notes: "Rewards:\n$2275\n50 Exp", completed: false },
-            { quest: "Plasma Mustache", location: "Lighthouse", phase: 3, notes: "Rewards:\n$2047\n64 Exp", completed: false },
-            { quest: "Plasma Bari", location: "Lighthouse", phase: 3, notes: "Rewards:\n$2239\n47 Exp", completed: false },
-            { 
-                quest: "Boss Colress", 
-                location: "Lighthouse Cavern", 
-                phase: 3, 
-                isBoss: true, 
-                rewardsUrl: "https://i.imgur.com/t8QNyHA.png", 
-                notes: "Colress has 2 different main Pokémon: Mewtwo or Genesect. It will be chosen randomly between these two, plus 5 other Pokémon from his pool. You can choose 3 different difficulties: Beginner, Trainer, and Champion. The rewards scale to be much better on higher difficulties!", 
                 completed: false 
             }
         ];
@@ -1908,6 +1971,10 @@
             const dataList = getCurrentData();
 
             dataList.forEach((data, index) => {
+                if (hideCompleted && data.completed) {
+                    return; // Skip rendering completed quests when hidden
+                }
+
                 const tr = document.createElement('tr');
                 tr.className = `quest-main-row ${data.completed ? 'completed' : ''}`;
                 tr.id = `quest-row-${index}`;
